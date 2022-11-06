@@ -1,5 +1,5 @@
 # angular-cli-esri-map
-Based on angular-cli-esri-map: https://github.com/Esri/angular-cli-esri-map
+Based on angular-cli-esri-map
 
 ## Licensing
 
