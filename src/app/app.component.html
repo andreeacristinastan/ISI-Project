@@ -1,26 +1,6 @@
-<!-- The content below is only a placeholder and can be replaced. -->
-
-
-<!-- <app-esri-map [center]="mapCenter" [basemap]="basemapType" [zoom]="mapZoomLevel"
-  (mapLoadedEvent)="mapLoadedEvent($event)">
-</app-esri-map> -->
-
-<!-- <nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
-  <div class="container">
-    <a class="navbar-brand">Angular Router</a>
-    <ul class="nav navbar-nav" routerLinkActive="active">
-      <li class="nav-item"><a class="nav-link" routerLink="home">Home</a></li>
-      <li class="nav-item"><a class="nav-link" routerLink="map">Map</a></li>
-    </ul>
-  </div>
-</nav> -->
-
-
 <nav mat-tab-nav-bar [tabPanel]="tabPanel">
-  <a mat-tab-link *ngFor="let link of links"
-     (click)="activeLink = link"
-     [active]="activeLink == link"> {{link}} </a>
-  <a mat-tab-link disabled>Disabled Link</a>
+  <a mat-tab-link *ngFor="let tab of tabs" (click)="activeTab = tab.link" [active]="activeTab == tab.link"
+    [routerLink]="tab.link">{{tab.name}}</a>
 </nav>
 <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 

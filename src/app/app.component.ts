@@ -1,4 +1,10 @@
 import { Component } from '@angular/core';
+import { NavigationEnd, Event, Router } from '@angular/router';
+
+interface ITab {
+  name: string;
+  link: string;
+}
 
 @Component({
   selector: 'app-root',
@@ -7,14 +13,25 @@ import { Component } from '@angular/core';
 })
 
 export class AppComponent {
-  // Set our map properties
-  mapCenter = [-122.4194, 37.7749];
-  basemapType = 'satellite';
-  mapZoomLevel = 12;
 
-  links = ['home', 'map'];
-  activeLink = this.links[0];
+  tabs: ITab[] = [{
+    name: 'Home',
+    link: '/home'
+  }, {
+    name: 'Map',
+    link: '/map'
+  }];
 
+  activeTab = this.tabs[0].link;
+
+  constructor(private router: Router) {
+    this.router.events.subscribe((event: Event) => {
+      if (event instanceof NavigationEnd) {
+        this.activeTab = event.url;
+        console.log(event);
+      }
+    });
+  }
 
   // See app.component.html
   mapLoadedEvent(status: boolean) {

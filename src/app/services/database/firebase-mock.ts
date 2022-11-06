@@ -22,7 +22,11 @@ export class FirebaseMockService {
         return new Observable();
     }
 
-    addTestItem() {
+    addPointItem(_lat: number, _lng: number) {
+        
+    }
+
+    syncPointItem(_lat: number, _lng: number) {
         
     }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
+import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { Observable } from 'rxjs';
 
 export interface ITestItem {
@@ -19,8 +19,8 @@ export class FirebaseService {
     }
 
     connectToDatabase() {
-        this.listFeed = this.db.list('items').valueChanges();
-        this.objFeed = this.db.object('stat').valueChanges();
+        this.listFeed = this.db.list('list').valueChanges();
+        this.objFeed = this.db.object('obj').valueChanges();
     }
 
     getChangeFeedList() {
@@ -31,14 +31,21 @@ export class FirebaseService {
         return this.objFeed;
     }
 
-    addTestItem() {
+    addPointItem(lat: number, lng: number) {
         let item: ITestItem = {
             name: "test",
-            lat: 0,
-            lng: 0
+            lat: lat,
+            lng: lng
         };
-        this.db.list('items').push(item);
-        this.db.object('stat').set([item]);
+        this.db.list('list').push(item);
     }
 
+    syncPointItem(lat: number, lng: number) {
+        let item: ITestItem = {
+            name: "test",
+            lat: lat,
+            lng: lng
+        };
+        this.db.object('obj').set([item]);
+    }
 }
