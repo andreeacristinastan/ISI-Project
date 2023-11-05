@@ -18,11 +18,22 @@ import {
   ElementRef,
   OnDestroy
 } from "@angular/core";
-import { setDefaultOptions, loadModules } from 'esri-loader';
+
+import esri = __esri; // Esri TypeScript Types
+
 import { Subscription } from "rxjs";
 import { FirebaseService, ITestItem } from "src/app/services/database/firebase";
 import { FirebaseMockService } from "src/app/services/database/firebase-mock";
-import esri = __esri; // Esri TypeScript Types
+
+import Config from '@arcgis/core/config';
+import WebMap from '@arcgis/core/WebMap';
+import MapView from '@arcgis/core/views/MapView';
+
+import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
+import Graphic from '@arcgis/core/Graphic';
+import Point from '@arcgis/core/geometry/Point';
+
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 
 @Component({
   selector: "app-esri-map",
@@ -32,18 +43,6 @@ import esri = __esri; // Esri TypeScript Types
 export class EsriMapComponent implements OnInit, OnDestroy {
   // The <div> where we will place the map
   @ViewChild("mapViewNode", { static: true }) private mapViewEl: ElementRef;
-
-  // register Dojo AMD dependencies
-  _Map;
-  _MapView;
-  _FeatureLayer;
-  _Graphic;
-  _GraphicsLayer;
-  _Route;
-  _RouteParameters;
-  _FeatureSet;
-  _Point;
-  _locator;
 
   // Instances
   map: esri.Map;
@@ -73,42 +72,15 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
   async initializeMap() {
     try {
-      // configure esri-loader to use version x from the ArcGIS CDN
-      // setDefaultOptions({ version: '3.3.0', css: true });
-      setDefaultOptions({ css: true });
-
-      // Load the modules for the ArcGIS API for JavaScript
-      const [esriConfig, Map, MapView, FeatureLayer, Graphic, Point, GraphicsLayer, route, RouteParameters, FeatureSet] = await loadModules([
-        "esri/config",
-        "esri/Map",
-        "esri/views/MapView",
-        "esri/layers/FeatureLayer",
-        "esri/Graphic",
-        "esri/geometry/Point",
-        "esri/layers/GraphicsLayer",
-        "esri/rest/route",
-        "esri/rest/support/RouteParameters",
-        "esri/rest/support/FeatureSet"
-      ]);
-
-      // esriConfig.apiKey = "MY_API_KEY";
-
-      this._Map = Map;
-      this._MapView = MapView;
-      this._FeatureLayer = FeatureLayer;
-      this._Graphic = Graphic;
-      this._GraphicsLayer = GraphicsLayer;
-      this._Route = route;
-      this._RouteParameters = RouteParameters;
-      this._FeatureSet = FeatureSet;
-      this._Point = Point;
 
       // Configure the Map
-      const mapProperties = {
+      const mapProperties: esri.WebMapProperties = {
         basemap: this.basemap
       };
 
-      this.map = new Map(mapProperties);
+      // Config.apiKey = "MY_API_KEY";
+
+      this.map = new WebMap(mapProperties);
 
       this.addFeatureLayers();
       this.addGraphicLayers();
@@ -142,13 +114,13 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   }
 
   addGraphicLayers() {
-    this.graphicsLayer = new this._GraphicsLayer();
+    this.graphicsLayer = new GraphicsLayer();
     this.map.add(this.graphicsLayer);
   }
 
   addFeatureLayers() {
     // Trailheads feature layer (points)
-    var trailheadsLayer: __esri.FeatureLayer = new this._FeatureLayer({
+    var trailheadsLayer: __esri.FeatureLayer = new FeatureLayer({
       url:
         "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads/FeatureServer/0"
     });
@@ -156,7 +128,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.map.add(trailheadsLayer);
 
     // Trails feature layer (lines)
-    var trailsLayer: __esri.FeatureLayer = new this._FeatureLayer({
+    var trailsLayer: __esri.FeatureLayer = new FeatureLayer({
       url:
         "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trails/FeatureServer/0"
     });
@@ -164,7 +136,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.map.add(trailsLayer, 0);
 
     // Parks and open spaces (polygons)
-    var parksLayer: __esri.FeatureLayer = new this._FeatureLayer({
+    var parksLayer: __esri.FeatureLayer = new FeatureLayer({
       url:
         "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Parks_and_Open_Space/FeatureServer/0"
     });
@@ -174,12 +146,12 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     console.log("feature layers added");
   }
 
-  addPoint(lat: number, lng: number, register: boolean) {   
-    const point = { //Create a point
-      type: "point",
+  addPoint(lat: number, lng: number, register: boolean) {  
+    let point = new Point({
       longitude: lng,
       latitude: lat
-    };
+    });
+
     const simpleMarkerSymbol = {
       type: "simple-marker",
       color: [226, 119, 40],  // Orange
@@ -188,7 +160,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
         width: 1
       }
     };
-    let pointGraphic: esri.Graphic = new this._Graphic({
+    let pointGraphic: esri.Graphic = new Graphic({
       geometry: point,
       symbol: simpleMarkerSymbol
     });
