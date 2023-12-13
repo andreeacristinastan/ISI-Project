@@ -1,0 +1,40 @@
+{
+  "Users": [
+    {
+      "name": "Andreea Gagik"
+    }
+  ],
+  "Stadiums": {
+    "stadium_id": "",
+    "name": "",
+    "country": "",
+    "year_of_built": "",
+    "capacity": "",
+    "available_tickets": "",
+    "matches_played": [
+      {
+        "match_id": "",
+        "stadium_id": "",
+        "home_team": "",
+        "away_team": "",
+        "home_team_goals": "",
+        "away_team_goals": "",
+        "world_cup_year": "",
+        "attendance": ""
+      }
+    ],
+    "tickets_booked": "",
+    "next_matches": [
+      {
+        "match_id": "",
+        "stadium_id": "",
+        "home_team": "",
+        "away_team": "",
+        "home_team_goals": "",
+        "away_team_goals": "",
+        "world_cup_year": "",
+        "attendance": ""
+      }
+    ]
+  }
+}

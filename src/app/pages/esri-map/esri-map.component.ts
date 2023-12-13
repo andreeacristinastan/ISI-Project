@@ -66,8 +66,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   subscriptionObj: Subscription;
 
   constructor(
-    // private fbs: FirebaseService
-    private fbs: FirebaseMockService
+    private fbs: FirebaseService
+    // private fbs: FirebaseMockService
   ) { }
 
   async initializeMap() {
@@ -78,7 +78,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
         basemap: this.basemap
       };
 
-      // Config.apiKey = "MY_API_KEY";
+      Config.apiKey = "AAPK619bcbe1049045bbb6da1081e59967fczZuISsqzAJ2uJvhaa7AH8zz2N7mlE4HSyicdWutpdrf-tkdhtUCGEc4WBYKUDdou";
 
       this.map = new WebMap(mapProperties);
 

@@ -1,22 +1,38 @@
 <!-- Here's the DIV that we inject the map into -->
 
 <div fxLayout="row">
-    <div fxFlex="20%" fxLayout="column">
-        <mat-list>
-            <mat-list-item>
-                <span class="label">Firebase</span>
-            </mat-list-item>
-            <mat-divider></mat-divider>
-            <mat-list-item>
-                <button mat-button mat-button color="primary" class="full-w" (click)="connectFirebase()">Connect</button>
-            </mat-list-item>
-            <mat-divider></mat-divider>
-            <mat-list-item>
-                <button mat-button mat-button color="primary" class="full-w" (click)="addPointItem()">Add item</button>
-            </mat-list-item>
-        </mat-list>
-    </div>
-    <div fxFlex="80%">
-        <div #mapViewNode></div>
-    </div>
+  <div fxFlex="20%" fxLayout="column">
+    <mat-list>
+      <mat-list-item>
+        <span class="label">Firebase</span>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      <mat-list-item>
+        <button
+          mat-button
+          mat-button
+          color="primary"
+          class="full-w"
+          (click)="connectFirebase()"
+        >
+          Connect
+        </button>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      <mat-list-item>
+        <button
+          mat-button
+          mat-button
+          color="primary"
+          class="full-w"
+          (click)="addPointItem()"
+        >
+          Add item
+        </button>
+      </mat-list-item>
+    </mat-list>
+  </div>
+  <div fxFlex="80%">
+    <div #mapViewNode></div>
+  </div>
 </div>

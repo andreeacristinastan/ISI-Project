@@ -32,8 +32,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatDividerModule,
     MatListModule,
     FlexLayoutModule,
-    // AngularFireModule.initializeApp(environment.firebase, 'AngularDemoArcGIS'),
-    // AngularFireDatabaseModule
+    AngularFireModule.initializeApp(environment.firebase, 'AngularDemoArcGIS'),
+    AngularFireDatabaseModule
   ],
   providers: [
     FirebaseService,
