@@ -1,0 +1,92 @@
+<main style="max-height: 100%">
+  <form [formGroup]="form">
+    <p style="font-family: 'Roboto', sans-serif; color: rgb(94, 133, 111)">
+      <strong>Use your credential to log in</strong>
+    </p>
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input
+        matInput
+        class="email"
+        type="email"
+        placeholder="Ex. pat@example.com"
+        formControlName="email"
+      />
+      <mat-error *ngIf="form.get('email')!.hasError('required')"
+        >Email is required</mat-error
+      >
+      <mat-error *ngIf="form.get('email')!.hasError('email')"
+        >Please enter a valid email address</mat-error
+      >
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input
+        matInput
+        class="password"
+        type="password"
+        placeholder="Password"
+        formControlName="password"
+      />
+      <mat-error *ngIf="form.get('password')!.hasError('required')"
+        >Password is required</mat-error
+      >
+    </mat-form-field>
+    <div class="aligned-to-right" test-id="recover-password-button">
+      <button
+        type="button"
+        mat-button
+        [disabled]="!form.get('email')!.valid"
+        (click)="recoverPassword()"
+        *ngIf="!isRecoveringPassword"
+      >
+        Recover Password
+      </button>
+      <button
+        mat-button
+        color="primary"
+        class="button-loader-recover-password"
+        *ngIf="isRecoveringPassword"
+        test-id="recover-password-loader"
+      >
+        <mat-spinner color="primary" diameter="20"></mat-spinner>
+      </button>
+
+      <!-- <button
+        mat-button
+        color="primary"
+        class="button-loader recover-password"
+        *ngIf="isRecoveringPassword"
+        test-id="recover-password-loader"
+      >
+        <mat-spinner color="primary" diameter="20"></mat-spinner>
+      </button> -->
+    </div>
+
+    <button
+      class="login"
+      mat-raised-button
+      color="primary"
+      [disabled]="!form.valid"
+      (click)="login()"
+      *ngIf="!isLoggingIn"
+      test-id="login-button"
+    >
+      Login
+    </button>
+
+    <button
+      class="button-loader"
+      *ngIf="isLoggingIn"
+      mat-raised-button
+      color="primary"
+      test-id="login-loader"
+    >
+      <mat-spinner color="accent" diameter="20"></mat-spinner>
+    </button>
+    <button class="register" mat-stroked-button color="primary">
+      REGISTER
+    </button>
+  </form>
+</main>

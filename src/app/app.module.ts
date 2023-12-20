@@ -19,10 +19,14 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { AngularFireAuthModule } from "@angular/fire/compat/auth";
+// import { BlankComponent } from './pages/mocks/blank/blank.component';
+import { HomeComponent } from './pages/home/home.component';
+import { AuthenticationService } from "./services/database/authentication.service";
 
 
 @NgModule({
-  declarations: [AppComponent, EsriMapComponent],
+  declarations: [AppComponent, EsriMapComponent, HomeComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -33,11 +37,13 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatListModule,
     FlexLayoutModule,
     AngularFireModule.initializeApp(environment.firebase, 'AngularDemoArcGIS'),
-    AngularFireDatabaseModule
+    AngularFireDatabaseModule,
+    AngularFireAuthModule
   ],
   providers: [
     FirebaseService,
-    FirebaseMockService
+    FirebaseMockService,
+    AuthenticationService
   ],
   bootstrap: [AppComponent]
 })

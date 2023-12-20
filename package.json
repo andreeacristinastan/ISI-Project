@@ -1,5 +1,6 @@
 {
   "name": "angular-cli-esri-map",
+  "start": "ng serve --source-map=false",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -16,10 +17,10 @@
     "@angular/common": "^14.0.0",
     "@angular/compiler": "^14.0.0",
     "@angular/core": "^14.0.0",
-    "@angular/fire": "^7.4.1",
+    "@angular/fire": "^7.6.1",
     "@angular/flex-layout": "^14.0.0-beta.41",
     "@angular/forms": "^14.0.0",
-    "@angular/material": "^14.2.6",
+    "@angular/material": "^14.2.7",
     "@angular/platform-browser": "^14.0.0",
     "@angular/platform-browser-dynamic": "^14.0.0",
     "@angular/router": "^14.0.0",

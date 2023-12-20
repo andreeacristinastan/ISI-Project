@@ -1,6 +1,13 @@
-<nav mat-tab-nav-bar [tabPanel]="tabPanel">
-  <a mat-tab-link *ngFor="let tab of tabs" (click)="activeTab = tab.link" [active]="activeTab == tab.link"
-    [routerLink]="tab.link">{{tab.name}}</a>
+<nav mat-tab-nav-bar [tabPanel]="tabPanel" class="my-tab-nav">
+  <a
+    mat-tab-link
+    *ngFor="let tab of tabs; let last = last"
+    (click)="onTabClick(last, tab)"
+    [active]="activeTab == tab.link"
+    [routerLink]="tab.link"
+    class="my-tab-link"
+    >{{ last ? ((isAuthenticated | async) ? "Log Out" : "Sign In") : tab.name }}
+  </a>
 </nav>
 <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 

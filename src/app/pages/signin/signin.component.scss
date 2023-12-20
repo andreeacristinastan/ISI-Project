@@ -1,0 +1,99 @@
+.example-form {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .example-full-width {
+    width: 100%;
+  }
+
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    button, mat-form-field {
+      width: -webkit-fill-available;
+
+      &[mat-button] {
+        width: auto;
+        
+      }
+    }
+
+    mat-form-field {
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin: 5px 0;
+    }
+
+    .login {
+      background-color: rgb(94, 133, 111);
+    }
+
+    .register {
+      color: rgb(94, 133, 111);
+    }
+
+    .aligned-to-right {
+      text-align: right;
+      width: 100%;
+      color: rgb(94, 133, 111);
+      font-weight: bold;
+    }
+  }
+
+  .button-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+    background-color: rgb(94, 133, 111);
+    text-emphasis-color: #fff;
+
+    // flex-direction: column;
+  }
+  
+  .button-loader-recover-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+    background-color: rgb(94, 133, 111);
+    text-emphasis-color: #fff;
+
+    // flex-direction: column;
+  }
+
+mat-label {
+  color: rgb(94, 133, 111);
+  text-decoration-color: rgb(94, 133, 111) !important;
+  
+}
+
+::ng-deep .mat-form-field-ripple {
+  background-color: rgb(94, 133, 111) !important;
+}
+
+/* This is the overline when there's an error */
+/* This is the underline when there's an error */
+::ng-deep .mat-input-invalid .mat-input-ripple {
+  background-color: red !important;
+}
+
+// ::selection {
+//   text-decoration-color: rgb(94, 133, 111) !important;
+//   background-color:  rgb(94, 133, 111) !important;
+// }

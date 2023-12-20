@@ -23,7 +23,6 @@ import esri = __esri; // Esri TypeScript Types
 
 import { Subscription } from "rxjs";
 import { FirebaseService, ITestItem } from "src/app/services/database/firebase";
-import { FirebaseMockService } from "src/app/services/database/firebase-mock";
 
 import Config from '@arcgis/core/config';
 import WebMap from '@arcgis/core/WebMap';
@@ -32,8 +31,10 @@ import MapView from '@arcgis/core/views/MapView';
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import Graphic from '@arcgis/core/Graphic';
 import Point from '@arcgis/core/geometry/Point';
-
+import { AuthenticationService } from 'src/app/services/database/authentication.service';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import 'firebase/auth';
+
 
 @Component({
   selector: "app-esri-map",
@@ -51,11 +52,11 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   graphicsLayer: esri.GraphicsLayer;
 
   // Attributes
-  zoom = 10;
-  center: Array<number> = [-118.73682450024377, 34.07817583063242];
-  basemap = "streets-vector";
+  zoom = 2;
+  center: Array<number> = [-98.5795, 45.8283];
+  basemap = "streets-navigation-vector";
   loaded = false;
-  pointCoords: number[] = [-118.73682450024377, 34.07817583063242];
+  pointCoords: number[] = [-98.5795, 45.8283];
   dir: number = 0;
   count: number = 0;
   timeoutHandler = null;
@@ -66,8 +67,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   subscriptionObj: Subscription;
 
   constructor(
-    private fbs: FirebaseService
-    // private fbs: FirebaseMockService
+    private fbs: FirebaseService,
+    private authService: AuthenticationService
   ) { }
 
   async initializeMap() {
@@ -107,7 +108,11 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       await this.view.when(); // wait for map to load
       console.log("ArcGIS map loaded");
       console.log("Map center: " + this.view.center.latitude + ", " + this.view.center.longitude);
+      
+      
       return this.view;
+
+      
     } catch (error) {
       console.log("EsriLoader: ", error);
     }
@@ -120,30 +125,30 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
   addFeatureLayers() {
     // Trailheads feature layer (points)
-    var trailheadsLayer: __esri.FeatureLayer = new FeatureLayer({
-      url:
-        "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads/FeatureServer/0"
-    });
+    // var trailheadsLayer: __esri.FeatureLayer = new FeatureLayer({
+    //   url:
+    //     "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads/FeatureServer/0"
+    // });
 
-    this.map.add(trailheadsLayer);
+    // this.map.add(trailheadsLayer);
 
     // Trails feature layer (lines)
-    var trailsLayer: __esri.FeatureLayer = new FeatureLayer({
-      url:
-        "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trails/FeatureServer/0"
-    });
+    // var trailsLayer: __esri.FeatureLayer = new FeatureLayer({
+    //   url:
+    //     "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trails/FeatureServer/0"
+    // });
 
-    this.map.add(trailsLayer, 0);
+    // this.map.add(trailsLayer, 0);
 
     // Parks and open spaces (polygons)
-    var parksLayer: __esri.FeatureLayer = new FeatureLayer({
-      url:
-        "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Parks_and_Open_Space/FeatureServer/0"
-    });
+    // var parksLayer: __esri.FeatureLayer = new FeatureLayer({
+    //   url:
+    //     "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Parks_and_Open_Space/FeatureServer/0"
+    // });
 
-    this.map.add(parksLayer, 0);
+    // this.map.add(parksLayer, 0);
 
-    console.log("feature layers added");
+    // console.log("feature layers added");
   }
 
   addPoint(lat: number, lng: number, register: boolean) {  
@@ -229,19 +234,19 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.isConnected = true;
     this.fbs.connectToDatabase();
     this.subscriptionList = this.fbs.getChangeFeedList().subscribe((items: ITestItem[]) => {
-      console.log("got new items from list: ", items);
+      // console.log("got new items from list: ", items);
       this.graphicsLayer.removeAll();
       for (let item of items) {
         this.addPoint(item.lat, item.lng, false);
       }
     });
     this.subscriptionObj = this.fbs.getChangeFeedObj().subscribe((stat: ITestItem[]) => {
-      console.log("item updated from object: ", stat);
+      // console.log("item updated from object: ", stat);
     });
   }
 
   addPointItem() {
-    console.log("Map center: " + this.view.center.latitude + ", " + this.view.center.longitude);
+    // console.log("Map center: " + this.view.center.latitude + ", " + this.view.center.longitude);
     this.fbs.addPointItem(this.view.center.latitude, this.view.center.longitude);
   }
 
@@ -256,10 +261,19 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Initialize MapView and return an instance of MapView
+    this.connectFirebase();
     console.log("initializing map");
+    // console.log(this.isAuthenticated);
+    this.authService.isAuthenticated.subscribe(isAuth => {
+      if (isAuth) {
+        console.log('Utilizatorul este autentificat!');
+      } else {
+        console.log('Utilizatorul nu este autentificat!');
+      }
+    });
     this.initializeMap().then(() => {
       // The map has been initialized
-      console.log("mapView ready: ", this.view.ready);
+      // console.log("mapView ready: ", this.view.ready);
       this.loaded = this.view.ready;
       this.runTimer();
     });
