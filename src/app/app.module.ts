@@ -23,6 +23,7 @@ import { AngularFireAuthModule } from "@angular/fire/compat/auth";
 // import { BlankComponent } from './pages/mocks/blank/blank.component';
 import { HomeComponent } from './pages/home/home.component';
 import { AuthenticationService } from "./services/database/authentication.service";
+import { SignupComponent } from './pages/signup/signup.component';
 
 
 @NgModule({

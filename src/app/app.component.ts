@@ -20,9 +20,16 @@ export class AppComponent {
   tabs: ITab[] = [//{
     // name: 'Home',
     // link: '/home'
-  /*},*/ {
+  /*},*/ 
+  
+  
+  {
     name: 'Map',
     link: '/map'
+  },
+  {
+    name: 'Create An Account',
+    link: '/signup'
   }, {
     name: 'Sign In',
     link: '/signin'
@@ -80,7 +87,7 @@ export class AppComponent {
     this.authService.isAuthenticated.subscribe(isAuth => {
       if (isAuth) {
         // if (isAuthenticated) {
-          this.tabs.splice(1, 0, {
+          this.tabs.splice(2, 0, {
             name: 'My Account',
             link: '/myaccount'
           });

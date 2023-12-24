@@ -17,14 +17,20 @@
 
 .my-tab-nav {
     display: flex;
-    justify-content: space-between;
+    // justify-content: space-between;
   }
   
-  .my-tab-link:first-child {
-    margin-right: auto;
-  }
+// .my-tab-link:nth-child(1),
+// .my-tab-link:nth-child(2) {
+//   margin-right: auto;
+// }
+
+  // .my-tab-link:nth-child(2) {
+  //   margin-left: 20px;
+  // }
   
   .my-tab-link:last-child {
+    // position: absolute;
     text-align: center; 
     margin-left: auto;
     display: flex;
