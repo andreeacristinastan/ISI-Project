@@ -1,20 +1,33 @@
-<!-- <p>signup works!</p> -->
 <main style="max-height: 100%">
-  <form [formGroup]="form">
-    <p style="font-family: 'Roboto', sans-serif; color: rgb(94, 133, 111)">
-      <strong>Create your account</strong>
-    </p>
+  <p style="font-family: 'Roboto', sans-serif; color: rgb(94, 133, 111)">
+    <strong>Create your account</strong>
+  </p>
+  <form [formGroup]="form" (ngSubmit)="register()">
     <mat-form-field>
-      <mat-label>Name</mat-label>
+      <mat-label>First Name</mat-label>
       <input
         matInput
-        class="name"
+        class="first-name"
         type="text"
-        placeholder="Ex. John Doe"
-        formControlName="name"
+        placeholder="Ex. John"
+        formControlName="firstName"
       />
-      <mat-error *ngIf="form.get('name')!.hasError('required')"
-        >Name is required</mat-error
+      <mat-error *ngIf="form.get('firstName')!.hasError('required')"
+        >First name is required</mat-error
+      >
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Last Name</mat-label>
+      <input
+        matInput
+        class="last-name"
+        type="text"
+        placeholder="Ex. Doe"
+        formControlName="lastName"
+      />
+      <mat-error *ngIf="form.get('lastName')!.hasError('required')"
+        >Last name is required</mat-error
       >
     </mat-form-field>
 
@@ -61,25 +74,16 @@
       <mat-error *ngIf="form.get('confirmPassword')!.hasError('required')"
         >Confirm Password is required</mat-error
       >
-      <mat-error *ngIf="form.get('confirmPassword')!.hasError('mustMatch')"
-        >Passwords must match</mat-error
-      >
     </mat-form-field>
 
-    <!-- <button
-      class="button-loader"
-      *ngIf="isRegistered"
-      mat-raised-button
-      color="primary"
-      test-id="register-loader"
+    <mat-error *ngIf="form.errors?.['passwordsDontMatch']"
+      >Passwords should match</mat-error
     >
-      <mat-spinner color="accent" diameter="20"></mat-spinner>
-    </button> -->
     <button
       class="register"
-      routerLink="/signup"
       mat-raised-button
       color="primary"
+      [disabled]="!form.valid"
     >
       REGISTER
     </button>

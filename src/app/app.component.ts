@@ -28,7 +28,7 @@ export class AppComponent {
     link: '/map'
   },
   {
-    name: 'Create An Account',
+    name: 'Create an account',
     link: '/signup'
   }, {
     name: 'Sign In',
