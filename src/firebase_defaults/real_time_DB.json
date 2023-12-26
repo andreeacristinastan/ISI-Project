@@ -1,7 +1,15 @@
 {
   "Users": [
     {
-      "name": "Andreea Gagik"
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "age": "",
+      "country": "",
+      "phone_number": "",
+      "tickets_booked": "",
+      "password": "",
+      "username": ""
     }
   ],
   "Stadiums": {

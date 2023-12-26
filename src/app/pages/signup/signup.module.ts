@@ -6,8 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {MatButtonModule} from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 
 const routes: Routes = [
   {
@@ -26,9 +27,8 @@ const routes: Routes = [
     ReactiveFormsModule,
     MatProgressSpinnerModule,
     MatButtonModule,
-    MatSnackBarModule
-    
+    MatSnackBarModule,
+    AngularFireDatabaseModule
   ]
 })
 export class SignupModule { }
-
