@@ -9,6 +9,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
+import {MatSelectModule} from '@angular/material/select';
+
 
 const routes: Routes = [
   {
@@ -28,7 +30,8 @@ const routes: Routes = [
     MatProgressSpinnerModule,
     MatButtonModule,
     MatSnackBarModule,
-    AngularFireDatabaseModule
+    AngularFireDatabaseModule,
+    MatSelectModule
   ]
 })
 export class SignupModule { }

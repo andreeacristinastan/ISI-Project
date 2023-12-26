@@ -9,6 +9,8 @@ import { catchError, from } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { AuthenticationService } from 'src/app/services/database/authentication.service';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
+import {MatSelectModule} from '@angular/material/select';
+
 
 export function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -34,7 +36,8 @@ export class SignupComponent implements OnInit {
     private snackBar : MatSnackBar,
     private cd: ChangeDetectorRef,
     private afAuth: AngularFireAuth,
-    private db: AngularFireDatabase
+    private db: AngularFireDatabase,
+    private matSelect: MatSelectModule
     ) { }
 
   ngOnInit(): void {
@@ -43,7 +46,10 @@ export class SignupComponent implements OnInit {
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
-      confirmPassword: ['', Validators.required]
+      confirmPassword: ['', Validators.required],
+      country: ['', Validators.required],
+      age: ['', Validators.required],
+      phoneNumber: ['', Validators.required]
     }, { validators: passwordsMatchValidator });
   }
 
@@ -80,9 +86,9 @@ export class SignupComponent implements OnInit {
               firstName: this.form.value.firstName,
               lastName: this.form.value.lastName,
               email: this.form.value.email,
-              // age: this.form.value.age,
-              // country: this.form.value.country,
-              // phoneNumber: this.form.value.phoneNumber,
+              age: this.form.value.age,
+              country: this.form.value.country,
+              phoneNumber: this.form.value.phoneNumber,
               tickets_booked: 0, // Initialize as empty array or set a default value
               password: this.form.value.password // Make sure to handle this securely
               // username: this.form.value.username
