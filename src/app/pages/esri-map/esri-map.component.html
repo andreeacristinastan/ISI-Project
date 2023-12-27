@@ -1,6 +1,17 @@
 <!-- Here's the DIV that we inject the map into -->
 
 <div fxLayout="row">
+  <div class="form-group">
+    <label for="category">Category</label>
+    <select (change)="getStadiums($event.target.value)">
+      <option class="" *ngFor="let m of matches$ | async" [value]="m.match_id">
+        {{ m.round }} {{ m.home_team }} - {{ m.away_team }}
+      </option>
+    </select>
+  </div>
+
+  <p>{{ selectedStadium }}</p>
+
   <div fxFlex="20%" fxLayout="column">
     <mat-list>
       <!-- <mat-list-item> -->
@@ -30,6 +41,16 @@
           style="color: rgb(94, 133, 111)"
         >
           Add item
+        </button>
+        <button
+          mat-button
+          mat-button
+          color="primary"
+          class="full-w"
+          (click)="getMatches()"
+          style="color: rgb(94, 133, 111)"
+        >
+          Get Docs
         </button>
       </mat-list-item>
     </mat-list>

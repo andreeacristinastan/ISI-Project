@@ -21,7 +21,7 @@ import {
 
 import esri = __esri; // Esri TypeScript Types
 
-import { Subscription } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { FirebaseService, ITestItem } from "src/app/services/database/firebase";
 
 import Config from '@arcgis/core/config';
@@ -33,13 +33,19 @@ import Graphic from '@arcgis/core/Graphic';
 import Point from '@arcgis/core/geometry/Point';
 import { AuthenticationService } from 'src/app/services/database/authentication.service';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import Query from '@arcgis/core/rest/support/Query';
 import 'firebase/auth';
-
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFirestore } from "@angular/fire/compat/firestore";
+import { DataService } from "src/app/services/database/data.service";
+import { IMatch } from "src/app/models/match";
+import { IStadium } from "src/app/models/stadium";
 
 @Component({
   selector: "app-esri-map",
   templateUrl: "./esri-map.component.html",
-  styleUrls: ["./esri-map.component.scss"]
+  styleUrls: ["./esri-map.component.scss"],
+  providers: [DataService]
 })
 export class EsriMapComponent implements OnInit, OnDestroy {
   // The <div> where we will place the map
@@ -66,10 +72,20 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   subscriptionList: Subscription;
   subscriptionObj: Subscription;
 
+  matches$: Observable<any>
+  stadiums$:Observable<any>
+
+  selectedStadium: IStadium;
+  
   constructor(
     private fbs: FirebaseService,
-    private authService: AuthenticationService
-  ) { }
+    private authService: AuthenticationService,
+    private firestoreService: DataService
+  ) { 
+    this.matches$ = firestoreService.getAllMatches();
+    this.stadiums$ = firestoreService.getAllStadiums();
+
+  }
 
   async initializeMap() {
     try {
@@ -85,7 +101,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
       this.addFeatureLayers();
       this.addGraphicLayers();
-
+      
+      
       this.addPoint(this.pointCoords[1], this.pointCoords[0], true);
 
       // Initialize the MapView
@@ -118,6 +135,36 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     }
   }
 
+  getMatches() {
+    this.firestoreService.bookTicket(2);
+  }
+
+  getStadiums(match_id: string) {
+    
+    console.log(typeof match_id);
+    this.stadiums$.subscribe(stadiums => {
+
+      let matchingStadium = null;
+      for (const stadium of stadiums) {
+        if (stadium.next_matches && stadium.next_matches.includes(parseInt(match_id))) {
+          console.log("am gasit")
+          matchingStadium = stadium;
+          break;
+        }
+      }
+
+      console.log(stadiums);
+      console.log(match_id);
+      console.log(matchingStadium)
+
+      if (matchingStadium) {
+        this.selectedStadium = matchingStadium.name; // Adjust property based on your actual stadium object
+      } else {
+        this.selectedStadium = null;
+      }
+    });
+  }
+
   addGraphicLayers() {
     this.graphicsLayer = new GraphicsLayer();
     this.map.add(this.graphicsLayer);
@@ -148,7 +195,34 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
     // this.map.add(parksLayer, 0);
 
-    // console.log("feature layers added");
+      // Add stadium feature layer
+
+      const stadiumsLayer = new FeatureLayer({
+        portalItem: {
+          id: "6a1b7f8182944170b50e8f764d15c1df"
+        }
+      });
+      
+    this.map.add(stadiumsLayer);
+
+      const matchesLayer = new FeatureLayer({
+        portalItem: {
+          id: "fd18eeb1f92848d0a794894ebcefa0e4"
+        }
+      });
+    
+    this.map.add(matchesLayer);
+
+
+    const stadiums2026 = new FeatureLayer({
+      portalItem: {
+        id: "28f8638baed24a9ab91a3d48ad31fff2"
+      }
+    });
+    
+    this.map.add(stadiums2026);
+    
+    console.log("feature layers added");
   }
 
   addPoint(lat: number, lng: number, register: boolean) {  
@@ -263,6 +337,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     // Initialize MapView and return an instance of MapView
     this.connectFirebase();
     console.log("initializing map");
+    this.matches$ = this.firestoreService.getAllMatches();
     // console.log(this.isAuthenticated);
     this.authService.isAuthenticated.subscribe(isAuth => {
       if (isAuth) {
