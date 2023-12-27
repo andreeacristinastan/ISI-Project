@@ -1,14 +1,14 @@
 import { IMatch } from "./match"
 
 export interface IStadium {
-    stadium_id: Number
-    capacity: Number
+    stadium_id: number
+    capacity: number
     city: string
     country: string
-    latitude: Number
-    longitude: Number
+    latitude: number
+    longitude: number
     name: string
     photo: string
-    year_of_built: Number
+    year_of_built: number
     next_matches: number[]
 }

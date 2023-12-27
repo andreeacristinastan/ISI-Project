@@ -16,7 +16,7 @@ import {
   OnInit,
   ViewChild,
   ElementRef,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 
 import esri = __esri; // Esri TypeScript Types
@@ -24,18 +24,18 @@ import esri = __esri; // Esri TypeScript Types
 import { Observable, Subscription } from "rxjs";
 import { FirebaseService, ITestItem } from "src/app/services/database/firebase";
 
-import Config from '@arcgis/core/config';
-import WebMap from '@arcgis/core/WebMap';
-import MapView from '@arcgis/core/views/MapView';
+import Config from "@arcgis/core/config";
+import WebMap from "@arcgis/core/WebMap";
+import MapView from "@arcgis/core/views/MapView";
 
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
-import Graphic from '@arcgis/core/Graphic';
-import Point from '@arcgis/core/geometry/Point';
-import { AuthenticationService } from 'src/app/services/database/authentication.service';
-import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-import Query from '@arcgis/core/rest/support/Query';
-import 'firebase/auth';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import Graphic from "@arcgis/core/Graphic";
+import Point from "@arcgis/core/geometry/Point";
+import { AuthenticationService } from "src/app/services/database/authentication.service";
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import Query from "@arcgis/core/rest/support/Query";
+import "firebase/auth";
+import { AngularFireAuth } from "@angular/fire/compat/auth";
 import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { DataService } from "src/app/services/database/data.service";
 import { IMatch } from "src/app/models/match";
@@ -45,7 +45,7 @@ import { IStadium } from "src/app/models/stadium";
   selector: "app-esri-map",
   templateUrl: "./esri-map.component.html",
   styleUrls: ["./esri-map.component.scss"],
-  providers: [DataService]
+  providers: [DataService],
 })
 export class EsriMapComponent implements OnInit, OnDestroy {
   // The <div> where we will place the map
@@ -72,37 +72,36 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   subscriptionList: Subscription;
   subscriptionObj: Subscription;
 
-  matches$: Observable<any>
-  stadiums$:Observable<any>
+  matches$: Observable<any>;
+  stadiums$: Observable<any>;
 
   selectedStadium: IStadium;
-  
+  selectedMatchId: number = -1;
+
   constructor(
     private fbs: FirebaseService,
     private authService: AuthenticationService,
     private firestoreService: DataService
-  ) { 
+  ) {
     this.matches$ = firestoreService.getAllMatches();
     this.stadiums$ = firestoreService.getAllStadiums();
-
   }
 
   async initializeMap() {
     try {
-
       // Configure the Map
       const mapProperties: esri.WebMapProperties = {
-        basemap: this.basemap
+        basemap: this.basemap,
       };
 
-      Config.apiKey = "AAPK619bcbe1049045bbb6da1081e59967fczZuISsqzAJ2uJvhaa7AH8zz2N7mlE4HSyicdWutpdrf-tkdhtUCGEc4WBYKUDdou";
+      Config.apiKey =
+        "AAPK619bcbe1049045bbb6da1081e59967fczZuISsqzAJ2uJvhaa7AH8zz2N7mlE4HSyicdWutpdrf-tkdhtUCGEc4WBYKUDdou";
 
       this.map = new WebMap(mapProperties);
 
       this.addFeatureLayers();
       this.addGraphicLayers();
-      
-      
+
       this.addPoint(this.pointCoords[1], this.pointCoords[0], true);
 
       // Initialize the MapView
@@ -110,55 +109,74 @@ export class EsriMapComponent implements OnInit, OnDestroy {
         container: this.mapViewEl.nativeElement,
         center: this.center,
         zoom: this.zoom,
-        map: this.map
+        map: this.map,
       };
 
       this.view = new MapView(mapViewProperties);
 
       // Fires `pointer-move` event when user clicks on "Shift"
       // key and moves the pointer on the view.
-      this.view.on('pointer-move', ["Shift"], (event) => {
+      this.view.on("pointer-move", ["Shift"], (event) => {
         let point = this.view.toMap({ x: event.x, y: event.y });
         console.log("map moved: ", point.longitude, point.latitude);
       });
 
       await this.view.when(); // wait for map to load
       console.log("ArcGIS map loaded");
-      console.log("Map center: " + this.view.center.latitude + ", " + this.view.center.longitude);
-      
-      
-      return this.view;
+      console.log(
+        "Map center: " +
+          this.view.center.latitude +
+          ", " +
+          this.view.center.longitude
+      );
 
-      
+      return this.view;
     } catch (error) {
       console.log("EsriLoader: ", error);
     }
   }
 
-  getMatches() {
-    this.firestoreService.bookTicket(2);
+  bookTicket() {
+    let res = this.firestoreService.bookTicket(this.selectedMatchId);
+
   }
 
-  getStadiums(match_id: string) {
-    
-    console.log(typeof match_id);
-    this.stadiums$.subscribe(stadiums => {
+  handleMatchSelect(match_id: string) {
 
+    if(parseInt(match_id) == -1) {
+      this.view.goTo({center: this.center, zoom: this.zoom})
+      return;
+    }
+
+
+    this.stadiums$.forEach((stadiums: IStadium[]) => {
+      for (let stadium of stadiums) {
+        if (stadium.next_matches.includes(parseInt(match_id))) {
+          this.view.goTo({
+            center: new Point({
+              longitude: stadium.longitude,
+              latitude: stadium.latitude,
+            }),
+            zoom: 5,
+          });
+        }
+      }
+    });
+
+    this.stadiums$.forEach((stadiums) => {
       let matchingStadium = null;
       for (const stadium of stadiums) {
-        if (stadium.next_matches && stadium.next_matches.includes(parseInt(match_id))) {
-          console.log("am gasit")
+        if (
+          stadium.next_matches &&
+          stadium.next_matches.includes(parseInt(match_id))
+        ) {
           matchingStadium = stadium;
           break;
         }
       }
 
-      console.log(stadiums);
-      console.log(match_id);
-      console.log(matchingStadium)
-
       if (matchingStadium) {
-        this.selectedStadium = matchingStadium.name; // Adjust property based on your actual stadium object
+        this.selectedStadium = matchingStadium; // Adjust property based on your actual stadium object
       } else {
         this.selectedStadium = null;
       }
@@ -167,81 +185,124 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
   addGraphicLayers() {
     this.graphicsLayer = new GraphicsLayer();
-    this.map.add(this.graphicsLayer);
+    this.map.add(this.graphicsLayer, 0);
   }
 
   addFeatureLayers() {
-    // Trailheads feature layer (points)
-    // var trailheadsLayer: __esri.FeatureLayer = new FeatureLayer({
-    //   url:
-    //     "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads/FeatureServer/0"
-    // });
+    const graphicsLayer = new GraphicsLayer();
+    this.map.add(graphicsLayer, 4);
 
-    // this.map.add(trailheadsLayer);
+    function mapRange(value: number, fromMin: number, fromMax: number): number {
+      return ((value - fromMin) * 255) / (fromMax - fromMin);
+    }
 
-    // Trails feature layer (lines)
-    // var trailsLayer: __esri.FeatureLayer = new FeatureLayer({
-    //   url:
-    //     "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trails/FeatureServer/0"
-    // });
+    this.stadiums$.forEach((stadiums: IStadium[]) => {
+      for (const stadium of stadiums) {
+        this.matches$.forEach((matches: IMatch[]) => {
+          let cnt = 0;
+          for (const match of matches) {
+            if (stadium.next_matches.includes(match.match_id)) {
+              cnt++;
+              let lon = stadium.longitude;
+              let lat = stadium.latitude;
 
-    // this.map.add(trailsLayer, 0);
+              const point = {
+                //Create a point
+                type: "point",
+                longitude: lon,
+                latitude: lat,
+              };
 
-    // Parks and open spaces (polygons)
-    // var parksLayer: __esri.FeatureLayer = new FeatureLayer({
-    //   url:
-    //     "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Parks_and_Open_Space/FeatureServer/0"
-    // });
+              let r = 0;
+              let g = 0;
+              let b = 0;
 
-    // this.map.add(parksLayer, 0);
+              // r = mapRange(stadium.capacity - match.available_tickets , 0, stadium.capacity)
+              if (match.available_tickets / stadium.capacity > 0.75) {
+                r = 0;
+              } else {
+                r = 255;
+              }
 
-      // Add stadium feature layer
+              g = mapRange(match.available_tickets, 0, stadium.capacity);
 
-      const stadiumsLayer = new FeatureLayer({
-        portalItem: {
-          id: "6a1b7f8182944170b50e8f764d15c1df"
-        }
-      });
-      
-    this.map.add(stadiumsLayer);
+              const simpleMarkerSymbol = {
+                type: "simple-marker",
+                color: [r, g, b, 1], // Orange
+                size: "15px",
+                outline: {
+                  color: [0, 0, 0, 0.5], // White
+                  width: 1,
+                },
+                style: "circle",
+                yoffset: `${cnt * 15} px`,
+              };
+              const popupTemplate = {
+                title: "{round}: {home_team} - {away_team}",
+                content: "<button>Book ticket</button>",
+              };
+              const attributes = {
+                ...match,
+              };
 
-      const matchesLayer = new FeatureLayer({
-        portalItem: {
-          id: "fd18eeb1f92848d0a794894ebcefa0e4"
-        }
-      });
-    
-    this.map.add(matchesLayer);
+              const pointGraphic = new Graphic({
+                geometry: point,
+                symbol: simpleMarkerSymbol,
+                popupTemplate: popupTemplate,
+                attributes: attributes,
+              } as any);
+              graphicsLayer.add(pointGraphic);
+            }
+          }
+          console.log("==========");
+        });
+      }
+    });
 
+    const stadiumsLayer = new FeatureLayer({
+      portalItem: {
+        id: "6a1b7f8182944170b50e8f764d15c1df",
+      },
+    });
+
+    this.map.add(stadiumsLayer, 0);
+
+    const matchesLayer = new FeatureLayer({
+      portalItem: {
+        id: "fd18eeb1f92848d0a794894ebcefa0e4",
+      },
+    });
+
+    this.map.add(matchesLayer, 1);
 
     const stadiums2026 = new FeatureLayer({
       portalItem: {
-        id: "28f8638baed24a9ab91a3d48ad31fff2"
-      }
+        id: "28f8638baed24a9ab91a3d48ad31fff2",
+      },
     });
-    
-    this.map.add(stadiums2026);
-    
+
+    this.map.add(stadiums2026, 2);
+
     console.log("feature layers added");
   }
 
-  addPoint(lat: number, lng: number, register: boolean) {  
+  addPoint(lat: number, lng: number, register: boolean) {
     let point = new Point({
       longitude: lng,
-      latitude: lat
+      latitude: lat,
     });
 
     const simpleMarkerSymbol = {
       type: "simple-marker",
-      color: [226, 119, 40],  // Orange
+      color: [226, 119, 40], // Orange
       outline: {
         color: [255, 255, 255], // White
-        width: 1
-      }
+        width: 1,
+      },
     };
     let pointGraphic: esri.Graphic = new Graphic({
       geometry: point,
-      symbol: simpleMarkerSymbol
+      symbol: simpleMarkerSymbol,
     });
 
     this.graphicsLayer.add(pointGraphic);
@@ -307,21 +368,28 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     }
     this.isConnected = true;
     this.fbs.connectToDatabase();
-    this.subscriptionList = this.fbs.getChangeFeedList().subscribe((items: ITestItem[]) => {
-      // console.log("got new items from list: ", items);
-      this.graphicsLayer.removeAll();
-      for (let item of items) {
-        this.addPoint(item.lat, item.lng, false);
-      }
-    });
-    this.subscriptionObj = this.fbs.getChangeFeedObj().subscribe((stat: ITestItem[]) => {
-      // console.log("item updated from object: ", stat);
-    });
+    this.subscriptionList = this.fbs
+      .getChangeFeedList()
+      .subscribe((items: ITestItem[]) => {
+        // console.log("got new items from list: ", items);
+        this.graphicsLayer.removeAll();
+        for (let item of items) {
+          this.addPoint(item.lat, item.lng, false);
+        }
+      });
+    this.subscriptionObj = this.fbs
+      .getChangeFeedObj()
+      .subscribe((stat: ITestItem[]) => {
+        // console.log("item updated from object: ", stat);
+      });
   }
 
   addPointItem() {
     // console.log("Map center: " + this.view.center.latitude + ", " + this.view.center.longitude);
-    this.fbs.addPointItem(this.view.center.latitude, this.view.center.longitude);
+    this.fbs.addPointItem(
+      this.view.center.latitude,
+      this.view.center.longitude
+    );
   }
 
   disconnectFirebase() {
@@ -339,11 +407,11 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     console.log("initializing map");
     this.matches$ = this.firestoreService.getAllMatches();
     // console.log(this.isAuthenticated);
-    this.authService.isAuthenticated.subscribe(isAuth => {
+    this.authService.isAuthenticated.subscribe((isAuth) => {
       if (isAuth) {
-        console.log('Utilizatorul este autentificat!');
+        console.log("Utilizatorul este autentificat!");
       } else {
-        console.log('Utilizatorul nu este autentificat!');
+        console.log("Utilizatorul nu este autentificat!");
       }
     });
     this.initializeMap().then(() => {
