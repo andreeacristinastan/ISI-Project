@@ -24,6 +24,7 @@ import { AngularFireAuthModule } from "@angular/fire/compat/auth";
 import { HomeComponent } from './pages/home/home.component';
 import { AuthenticationService } from "./services/database/authentication.service";
 import { SignupComponent } from './pages/signup/signup.component';
+import { FormsModule } from "@angular/forms";
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { SignupComponent } from './pages/signup/signup.component';
     FlexLayoutModule,
     AngularFireModule.initializeApp(environment.firebase, 'AngularDemoArcGIS'),
     AngularFireDatabaseModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    FormsModule
   ],
   providers: [
     FirebaseService,

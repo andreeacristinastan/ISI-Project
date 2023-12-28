@@ -1,6 +1,28 @@
 <!-- Here's the DIV that we inject the map into -->
 
 <div fxLayout="row">
+  <div class="form-group" fxLayout="column">
+    <label for="category">Match selection</label>
+    <select
+      (change)="handleMatchSelect($event.target.value)"
+      [(ngModel)]="selectedMatchId"
+    >
+      <option [value]="-1">Select a match</option>
+      <option class="" *ngFor="let m of matches$ | async" [value]="m.match_id">
+        {{ m.round }} {{ m.home_team }} - {{ m.away_team }}
+      </option>
+    </select>
+
+    <p>Selected match id: {{ selectedMatchId }}</p>
+
+    <div *ngIf="selectedStadium !== undefined">
+      <p>{{ selectedStadium.name }}</p>
+      <p>{{ selectedStadium.capacity }}</p>
+    </div>
+
+    <button (click)="bookTicket()">Book a ticket</button>
+  </div>
+
   <div fxFlex="20%" fxLayout="column">
     <mat-list>
       <!-- <mat-list-item> -->
