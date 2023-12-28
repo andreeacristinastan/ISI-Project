@@ -26,6 +26,8 @@ export class DataService {
   }
 
   bookTicket(matchId: number) {
+      console.log("Booking ticket...");
+      
       // @TODO Add user checking
       if(false) {
         this.db.object(`matches/${matchId}/available_tickets`).query.ref.transaction(tickets => {

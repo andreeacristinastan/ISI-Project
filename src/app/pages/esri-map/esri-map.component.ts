@@ -239,7 +239,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
               };
               const popupTemplate = {
                 title: "{round}: {home_team} - {away_team}",
-                content: "<button>Book ticket</button>",
+                content: `<div><a href='' onclick='alert('@TODO BOOK TICKET')' style='cursor:pointer;display:inline-block;padding:10px 20px;margin:5px;color:#fff;background-color:#0079c1;text-decoration:none;border-radius:5px;'>Book a ticket</a></div>`  ,
+                
               };
               const attributes = {
                 ...match,
