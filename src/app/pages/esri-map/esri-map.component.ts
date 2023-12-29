@@ -40,6 +40,9 @@ import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { DataService } from "src/app/services/database/data.service";
 import { IMatch } from "src/app/models/match";
 import { IStadium } from "src/app/models/stadium";
+import Locate from '@arcgis/core/widgets/Locate';
+import Track from '@arcgis/core/widgets/Track';
+import {addressToLocations} from '@arcgis/core/rest/locator';
 
 @Component({
   selector: "app-esri-map",
@@ -285,7 +288,103 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.map.add(stadiums2026, 2);
 
     console.log("feature layers added");
+
+    
   }
+
+  // queryFeaturesAtPoint(point: Point) {
+  //   // Create a query
+  //   const query = new Query({
+  //     geometry: point,
+  //     spatialRelationship: "intersects", // Change as needed
+  //     returnGeometry: true,
+  //     outFields: ["*"], // Include all fields, change as needed
+  //   });
+  
+  //   // Perform the query on the FeatureLayerView
+  //   this.whenLayerView(stadiumsLayer).then((layerView) => {
+  //     if (layerView.type === "feature") {
+  //       const featureLayerView = layerView as __esri.FeatureLayerView;
+  
+  //       featureLayerView.queryFeatures(query).then((result) => {
+  //         handleQueryResult(result);
+  //       });
+  //     }
+  //   });
+  // }
+  
+  // // Handle the query result
+  // function handleQueryResult(result: __esri.FeatureSet) {
+  //   const features = result.features;
+  
+  //   // Process the features as needed
+  //   for (const feature of features) {
+  //     // Access feature attributes, geometry, etc.
+  //     const attributes = feature.attributes;
+  //     const geometry = feature.geometry;
+  
+  //     // Do something with the attributes and geometry
+  //     console.log("Attributes:", attributes);
+  //     console.log("Geometry:", geometry);
+  //   }
+  // }
+  
+  // // Example usage: Query features at a specific point
+  // const queryPoint = new Point({
+  //   longitude: -122.4194,
+  //   latitude: 37.7749,
+  // });
+  
+  // queryFeaturesAtPoint(queryPoint);
+
+  // findPlaces(pt) {
+  //   const geocodingServiceUrl = "http://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+
+  //   const params = {
+  //     categories: ["Cinema"],
+  //     location: pt,  // Paris (2.34602,48.85880)
+  //     outFields: ["PlaceName","Place_addr"]
+  //   } as any;
+
+  //   addressToLocations(geocodingServiceUrl, params).then((results)=> {
+  //     this.showResults(results);
+  //   });
+
+  // }
+
+  
+  // showResults(results) {
+  //   this.view.popup.close();
+  //     this.view.graphics.removeAll();
+  //     results.forEach((result)=>{
+  //       this.view.graphics.add(
+  //         new Graphic({
+  //           attributes: result.attributes,
+  //           geometry: result.location,
+  //           symbol: {
+  //            type: "simple-marker",
+  //            color: "blue",
+  //            size: "10px",
+  //            outline: {
+  //              color: "#ffffff",
+  //              width: "2px"
+  //            }
+  //           },
+  //           popupTemplate: {
+  //             title: "{PlaceName}",
+  //             content: "{Place_addr}" + "<br><br>" + result.location.x.toFixed(5) + "," + result.location.y.toFixed(5)
+  //           }
+  //        } as any));
+  //     });
+  //     if (results.length) {
+  //       const g = this.view.graphics.getItemAt(0);
+  //       this.view.openPopup({
+  //         features: [g],
+  //         location: g.geometry
+  //       });
+  //     }
+  // }
+
 
   addPoint(lat: number, lng: number, register: boolean) {
     let point = new Point({

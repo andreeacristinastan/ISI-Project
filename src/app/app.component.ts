@@ -21,7 +21,10 @@ export class AppComponent {
     // name: 'Home',
     // link: '/home'
   /*},*/ 
-  
+  {
+    name: 'List of stadiums',
+    link: '/liststadiums'
+  },
   
   {
     name: 'Map',
