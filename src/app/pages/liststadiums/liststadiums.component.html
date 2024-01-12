@@ -1,0 +1,26 @@
+<div class="center-container">
+  <div class="matches" *ngIf="displayedMatches">
+    <h3>Displayed Matches</h3>
+    <ul>
+      <li *ngFor="let match of displayedMatches" class="match">
+        <p>Match ID: {{ match.match_id }}</p>
+        <p>Round: {{ match.round }}</p>
+        <p>{{ match.home_team }} VS {{ match.away_team }}</p>
+        <p>Available tickets: {{ match.available_tickets }}</p>
+      </li>
+    </ul>
+  </div>
+  <div *ngFor="let stadium of stadiums$ | async" class="stadium">
+    <img
+      [src]="stadium.photo"
+      alt="{{ stadium.name }}"
+      width="200"
+      height="150"
+    />
+    <h3>{{ stadium.name }}</h3>
+    <p>Country: {{ stadium.country }}</p>
+    <p>City: {{ stadium.city }}</p>
+    <p>Capacity: {{ stadium.capacity }}</p>
+    <button (click)="viewMatches(stadium)">View Matches</button>
+  </div>
+</div>

@@ -40,6 +40,11 @@ import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { DataService } from "src/app/services/database/data.service";
 import { IMatch } from "src/app/models/match";
 import { IStadium } from "src/app/models/stadium";
+import Locate from '@arcgis/core/widgets/Locate';
+import Track from '@arcgis/core/widgets/Track';
+import {addressToLocations} from '@arcgis/core/rest/locator';
+import Search from '@arcgis/core/widgets/Search';
+import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
 
 @Component({
   selector: "app-esri-map",
@@ -56,6 +61,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   view: esri.MapView;
   pointGraphic: esri.Graphic;
   graphicsLayer: esri.GraphicsLayer;
+  searchWidget: esri.widgetsSearch;
 
   // Attributes
   zoom = 2;
@@ -66,6 +72,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   dir: number = 0;
   count: number = 0;
   timeoutHandler = null;
+
 
   // firebase sync
   isConnected: boolean = false;
@@ -86,6 +93,35 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.matches$ = firestoreService.getAllMatches();
     this.stadiums$ = firestoreService.getAllStadiums();
   }
+
+  initializeSearch() {
+    const searchWidgetProperties = {
+      view: this.view,
+      popupEnabled: false,
+    };
+  
+    this.searchWidget = new Search(searchWidgetProperties);
+  
+    this.searchWidget.on('select-result', (event) => {
+      const selectedResult = event.result;
+      this.view.goTo({
+        target: selectedResult.extent,
+        zoom: 10,
+      });
+    });
+  
+    this.searchWidget.on('search-clear', () => {
+      this.view.goTo({
+        center: this.center,
+        zoom: this.zoom,
+      });
+    });
+  
+    this.view.ui.add(this.searchWidget, {
+      position: 'top-right',
+    });
+  }
+  
 
   async initializeMap() {
     try {
@@ -129,7 +165,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
           ", " +
           this.view.center.longitude
       );
-
+      this.initializeSearch();
       return this.view;
     } catch (error) {
       console.log("EsriLoader: ", error);
@@ -140,6 +176,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     let res = this.firestoreService.bookTicket(this.selectedMatchId);
 
   }
+
 
   handleMatchSelect(match_id: string) {
 
