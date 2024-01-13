@@ -40,12 +40,15 @@ import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { DataService } from "src/app/services/database/data.service";
 import { IMatch } from "src/app/models/match";
 import { IStadium } from "src/app/models/stadium";
-import Locate from '@arcgis/core/widgets/Locate';
-import Track from '@arcgis/core/widgets/Track';
-import {addressToLocations} from '@arcgis/core/rest/locator';
-import Search from '@arcgis/core/widgets/Search';
-import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
+import Locate from "@arcgis/core/widgets/Locate";
+import Track from "@arcgis/core/widgets/Track";
+import { addressToLocations } from "@arcgis/core/rest/locator";
+import Search from "@arcgis/core/widgets/Search";
+import { SimpleMarkerSymbol } from "@arcgis/core/symbols";
 import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
+import RouteParameters from "@arcgis/core/rest/support/RouteParameters.js";
+import FeatureSet from "@arcgis/core/rest/support/FeatureSet.js";
+import * as route from "@arcgis/core/rest/route.js";
 
 @Component({
   selector: "app-esri-map",
@@ -73,7 +76,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   dir: number = 0;
   count: number = 0;
   timeoutHandler = null;
-
+  routeUrl =
+    "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
 
   // firebase sync
   isConnected: boolean = false;
@@ -85,6 +89,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
   selectedStadium: IStadium;
   selectedMatchId: number = -1;
+  displayedMatches = [];
 
   constructor(
     private fbs: FirebaseService,
@@ -95,8 +100,68 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.stadiums$ = firestoreService.getAllStadiums();
   }
 
+  viewMatches(stadium: IStadium): void {
+    console.log(stadium);
+    let allMatches = [] as IMatch[]   
+
+    this.matches$.forEach((matches: IMatch[]) => {
+      allMatches = matches.filter((match: IMatch) => stadium.next_matches.includes(match.match_id));
+      this.displayedMatches = allMatches;
+    })
+
+    this.selectedStadium = stadium;
+
+    this.view.goTo({
+      center: new Point({
+        longitude: stadium.longitude,
+        latitude: stadium.latitude,
+      }),
+      zoom: 5,
+    });
+    
+  }
+
   btnClick() {
     console.log("click");
+  }
+
+  addRoutingGraphic(type, point) {
+    const graphic = new Graphic({
+      symbol: {
+        type: "simple-marker",
+        color: type === "origin" ? "white" : "black",
+        size: "8px",
+      } as any,
+      geometry: point,
+    });
+    this.view.graphics.add(graphic);
+  }
+
+  initializeRouting() {
+    console.log("my  view is:");
+
+    console.log(this.view);
+
+    this.view.on("click", (event) => {
+      if (this.view.graphics.length !== 0) {
+        this.view.graphics.removeAll();
+      }
+
+      if (!this.selectedStadium) {
+        this.view.graphics.removeAll();
+        return;
+      }
+
+      this.addRoutingGraphic("origin", event.mapPoint);
+      this.addRoutingGraphic(
+        "destination",
+        new Point({
+          latitude: this.selectedStadium.latitude,
+          longitude: this.selectedStadium.longitude,
+        })
+      );
+      this.getRoute();
+    });
   }
 
   initializeSearch() {
@@ -104,29 +169,88 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       view: this.view,
       popupEnabled: false,
     };
-  
+
     this.searchWidget = new Search(searchWidgetProperties);
-  
-    this.searchWidget.on('select-result', (event) => {
+
+    this.searchWidget.on("select-result", (event) => {
       const selectedResult = event.result;
       this.view.goTo({
         target: selectedResult.extent,
         zoom: 10,
       });
     });
-  
-    this.searchWidget.on('search-clear', () => {
+
+    this.searchWidget.on("search-clear", () => {
       this.view.goTo({
         center: this.center,
         zoom: this.zoom,
       });
     });
-  
+
     this.view.ui.add(this.searchWidget, {
-      position: 'top-right',
+      position: "top-right",
     });
   }
-  
+
+  getRoute() {
+    const routeParams = new RouteParameters({
+      stops: new FeatureSet({
+        features: this.view.graphics.toArray(),
+      }),
+
+      returnDirections: true,
+    });
+
+    console.log(routeParams.stops);
+
+    console.log(this.routeUrl);
+    console.log(this.view);
+
+    route
+      .solve(this.routeUrl, routeParams)
+      .then((data) => {
+        data.routeResults.forEach((result) => {
+          result.route.symbol = {
+            type: "simple-line",
+            color: [5, 150, 255],
+            width: 3,
+          } as any;
+          this.view.graphics.add(result.route);
+        });
+
+        if (data.routeResults.length > 0) {
+          const directions = document.createElement("ol");
+          directions.classList.add("esri-widget");
+          directions.classList.add("esri-widget--panel");
+          directions.classList.add("esri-directions__scroller");
+          directions.style.marginTop = "0";
+          directions.style.padding = "15px 15px 15px 30px";
+          directions.style.maxHeight = "200px";
+          const features = data.routeResults[0].directions.features;
+
+          // Show each direction
+          features.forEach(function (result, i) {
+            const direction = document.createElement("li");
+            direction.innerHTML =
+              result.attributes.text +
+              " (" +
+              result.attributes.length.toFixed(2) +
+              " miles)";
+            directions.appendChild(direction);
+          });
+
+          this.view.ui.empty("top-left");
+          this.view.ui.add(directions, "top-left");
+        }
+      })
+      .catch(function (error) {
+        console.log("my err:");
+
+        console.log(error);
+      });
+
+    // Display directions
+  }
 
   async initializeMap() {
     try {
@@ -163,6 +287,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       });
 
       await this.view.when(); // wait for map to load
+
       console.log("ArcGIS map loaded");
       console.log(
         "Map center: " +
@@ -171,6 +296,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
           this.view.center.longitude
       );
       this.initializeSearch();
+
       return this.view;
     } catch (error) {
       console.log("EsriLoader: ", error);
@@ -183,14 +309,11 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     console.log(res);
   }
 
-
   handleMatchSelect(match_id: string) {
-
-    if(parseInt(match_id) == -1) {
-      this.view.goTo({center: this.center, zoom: this.zoom})
+    if (parseInt(match_id) == -1) {
+      this.view.goTo({ center: this.center, zoom: this.zoom });
       return;
     }
-
 
     this.stadiums$.forEach((stadiums: IStadium[]) => {
       for (let stadium of stadiums) {
@@ -235,9 +358,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.selectedMatchId = match_id;
     this.handleMatchSelect(match_id.toString());
 
-
     console.log(this.selectedMatchId);
-  
+
     this.bookTicket();
   }
 
@@ -291,11 +413,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
                 yoffset: `${cnt * 15} px`,
               };
 
-
               let btn;
               const popupTemplate = {
                 title: "{round}: {home_team} - {away_team}",
-                content:[							
+                content: [
                   {
                     type: "text",
                     text: "Description",
@@ -313,21 +434,22 @@ export class EsriMapComponent implements OnInit, OnDestroy {
                     type: "text",
                     text: " {round}: {home_team} vs. {away_team}\n 2026 World Cup.",
                   },
-                  
-                  
-                  
+
                   {
-                  type: "custom",
-                  creator: (graphic: any) => {
-                    // could also check if button already created
-                    // and just reuse it
-                    btn = document.createElement("button");
-                    btn.innerText = "Click me";
-                    btn.classList.add("mat-raised-button")
-                    btn.addEventListener("click", (e) => this.test_func(e, graphic.graphic.attributes.match_id));
-                    return btn;
-                  }
-                }]  
+                    type: "custom",
+                    creator: (graphic: any) => {
+                      // could also check if button already created
+                      // and just reuse it
+                      btn = document.createElement("button");
+                      btn.innerText = "Click me";
+                      btn.classList.add("mat-raised-button");
+                      btn.addEventListener("click", (e) =>
+                        this.test_func(e, graphic.graphic.attributes.match_id)
+                      );
+                      return btn;
+                    },
+                  },
+                ],
               };
 
               const attributes = {
@@ -508,6 +630,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       // console.log("mapView ready: ", this.view.ready);
       this.loaded = this.view.ready;
       this.runTimer();
+      this.initializeRouting();
     });
   }
 

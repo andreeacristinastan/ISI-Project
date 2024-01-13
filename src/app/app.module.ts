@@ -25,7 +25,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { AuthenticationService } from "./services/database/authentication.service";
 import { SignupComponent } from './pages/signup/signup.component';
 import { FormsModule } from "@angular/forms";
-
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatCardModule} from '@angular/material/card';
 
 @NgModule({
   declarations: [AppComponent, EsriMapComponent, HomeComponent],
@@ -37,6 +38,8 @@ import { FormsModule } from "@angular/forms";
     MatButtonModule,
     MatDividerModule,
     MatListModule,
+    MatGridListModule,
+    MatCardModule,
     FlexLayoutModule,
     AngularFireModule.initializeApp(environment.firebase, 'AngularDemoArcGIS'),
     AngularFireDatabaseModule,

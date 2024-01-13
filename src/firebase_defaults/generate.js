@@ -521,7 +521,7 @@ stadiums = stadiums.map((stadium, i) => { const newObj = { stadium_id: i, ...sta
 
 let numbers = [];
 for (let i = 0; i < 48; i++) {
-    numbers.push(i + 1);
+    numbers.push(i);
 }
 
 stadiums.map(stadium => {

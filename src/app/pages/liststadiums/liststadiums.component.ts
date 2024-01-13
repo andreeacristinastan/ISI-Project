@@ -34,7 +34,6 @@ export class ListstadiumsComponent implements OnInit {
       allMatches = matches.filter((match: IMatch) => stadium.next_matches.includes(match.match_id));
       this.displayedMatches = allMatches;
     })
- 
   }
 }
 
