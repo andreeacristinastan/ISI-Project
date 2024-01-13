@@ -179,347 +179,340 @@ let stadiums = [
 
 let matches = [
     {
-        "match_id": 1,
-        "round": "Group A",
-        "home_team": "Mexico",
-        "away_team": "Brazil",
-        "available_tickets": 500
+        match_id: 0,
+        round: 'Group A',
+        home_team: 'Mexico',
+        away_team: 'Brazil',
+        available_tickets: 500
     },
     {
-        "match_id": 2,
-        "round": "Group A",
-        "home_team": "France",
-        "away_team": "Australia",
-        "available_tickets": 500
+        match_id: 1,
+        round: 'Group A',
+        home_team: 'France',
+        away_team: 'Australia',
+        available_tickets: 500
     },
     {
-        "match_id": 3,
-        "round": "Group A",
-        "home_team": "Mexico",
-        "away_team": "France",
-        "available_tickets": 500
+        match_id: 2,
+        round: 'Group A',
+        home_team: 'Mexico',
+        away_team: 'France',
+        available_tickets: 500
     },
     {
-        "match_id": 4,
-        "round": "Group A",
-        "home_team": "Brazil",
-        "away_team": "Australia",
-        "available_tickets": 500
+        match_id: 3,
+        round: 'Group A',
+        home_team: 'Brazil',
+        away_team: 'Australia',
+        available_tickets: 500
     },
     {
-        "match_id": 5,
-        "round": "Group A",
-        "home_team": "Brazil",
-        "away_team": "France",
-        "available_tickets": 500
+        match_id: 4,
+        round: 'Group A',
+        home_team: 'Brazil',
+        away_team: 'France',
+        available_tickets: 500
     },
     {
-        "match_id": 6,
-        "round": "Group A",
-        "home_team": "Mexico",
-        "away_team": "Australia",
-        "available_tickets": 500
-    },
-
-    {
-        "match_id": 7,
-        "round": "Group B",
-        "home_team": "Argentina",
-        "away_team": "Portugal",
-        "available_tickets": 500
+        match_id: 5,
+        round: 'Group A',
+        home_team: 'Mexico',
+        away_team: 'Australia',
+        available_tickets: 500
     },
     {
-        "match_id": 8,
-        "round": "Group B",
-        "home_team": "Netherlands",
-        "away_team": "Ghana",
-        "available_tickets": 500
+        match_id: 6,
+        round: 'Group B',
+        home_team: 'Argentina',
+        away_team: 'Portugal',
+        available_tickets: 500
     },
     {
-        "match_id": 9,
-        "round": "Group B",
-        "home_team": "Argentina",
-        "away_team": "Netherlands",
-        "available_tickets": 500
+        match_id: 7,
+        round: 'Group B',
+        home_team: 'Netherlands',
+        away_team: 'Ghana',
+        available_tickets: 500
     },
     {
-        "match_id": 10,
-        "round": "Group B",
-        "home_team": "Portugal",
-        "away_team": "Ghana",
-        "available_tickets": 500
+        match_id: 8,
+        round: 'Group B',
+        home_team: 'Argentina',
+        away_team: 'Netherlands',
+        available_tickets: 500
     },
     {
-        "match_id": 11,
-        "round": "Group B",
-        "home_team": "Portugal",
-        "away_team": "Netherlands",
-        "available_tickets": 500
+        match_id: 9,
+        round: 'Group B',
+        home_team: 'Portugal',
+        away_team: 'Ghana',
+        available_tickets: 500
     },
     {
-        "match_id": 12,
-        "round": "Group B",
-        "home_team": "Argentina",
-        "away_team": "Ghana",
-        "available_tickets": 500
-    },
-
-    {
-        "match_id": 13,
-        "round": "Group C",
-        "home_team": "Spain",
-        "away_team": "Italy",
-        "available_tickets": 500
+        match_id: 10,
+        round: 'Group B',
+        home_team: 'Portugal',
+        away_team: 'Netherlands',
+        available_tickets: 500
     },
     {
-        "match_id": 14,
-        "round": "Group C",
-        "home_team": "Germany",
-        "away_team": "England",
-        "available_tickets": 500
+        match_id: 11,
+        round: 'Group B',
+        home_team: 'Argentina',
+        away_team: 'Ghana',
+        available_tickets: 500
     },
     {
-        "match_id": 15,
-        "round": "Group C",
-        "home_team": "Spain",
-        "away_team": "Germany",
-        "available_tickets": 500
+        match_id: 12,
+        round: 'Group C',
+        home_team: 'Spain',
+        away_team: 'Italy',
+        available_tickets: 500
     },
     {
-        "match_id": 16,
-        "round": "Group C",
-        "home_team": "Italy",
-        "away_team": "England",
-        "available_tickets": 500
+        match_id: 13,
+        round: 'Group C',
+        home_team: 'Germany',
+        away_team: 'England',
+        available_tickets: 500
     },
     {
-        "match_id": 17,
-        "round": "Group C",
-        "home_team": "Italy",
-        "away_team": "Germany",
-        "available_tickets": 500
+        match_id: 14,
+        round: 'Group C',
+        home_team: 'Spain',
+        away_team: 'Germany',
+        available_tickets: 500
     },
     {
-        "match_id": 18,
-        "round": "Group C",
-        "home_team": "Spain",
-        "away_team": "England",
-        "available_tickets": 500
-    },
-
-    {
-        "match_id": 19,
-        "round": "Group D",
-        "home_team": "Portugal",
-        "away_team": "Argentina",
-        "available_tickets": 500
+        match_id: 15,
+        round: 'Group C',
+        home_team: 'Italy',
+        away_team: 'England',
+        available_tickets: 500
     },
     {
-        "match_id": 20,
-        "round": "Group D",
-        "home_team": "France",
-        "away_team": "Netherlands",
-        "available_tickets": 500
+        match_id: 16,
+        round: 'Group C',
+        home_team: 'Italy',
+        away_team: 'Germany',
+        available_tickets: 500
     },
     {
-        "match_id": 21,
-        "round": "Group D",
-        "home_team": "Portugal",
-        "away_team": "France",
-        "available_tickets": 500
+        match_id: 17,
+        round: 'Group C',
+        home_team: 'Spain',
+        away_team: 'England',
+        available_tickets: 500
     },
     {
-        "match_id": 22,
-        "round": "Group D",
-        "home_team": "Argentina",
-        "away_team": "Netherlands",
-        "available_tickets": 500
+        match_id: 18,
+        round: 'Group D',
+        home_team: 'Portugal',
+        away_team: 'Argentina',
+        available_tickets: 500
     },
     {
-        "match_id": 23,
-        "round": "Group D",
-        "home_team": "Argentina",
-        "away_team": "France",
-        "available_tickets": 500
+        match_id: 19,
+        round: 'Group D',
+        home_team: 'France',
+        away_team: 'Netherlands',
+        available_tickets: 500
     },
     {
-        "match_id": 24,
-        "round": "Group D",
-        "home_team": "Portugal",
-        "away_team": "Netherlands",
-        "available_tickets": 500
-    },
-
-    {
-        "match_id": 25,
-        "round": "Group E",
-        "home_team": "Brazil",
-        "away_team": "Germany",
-        "available_tickets": 500
+        match_id: 20,
+        round: 'Group D',
+        home_team: 'Portugal',
+        away_team: 'France',
+        available_tickets: 500
     },
     {
-        "match_id": 26,
-        "round": "Group E",
-        "home_team": "Italy",
-        "away_team": "Spain",
-        "available_tickets": 500
+        match_id: 21,
+        round: 'Group D',
+        home_team: 'Argentina',
+        away_team: 'Netherlands',
+        available_tickets: 500
     },
     {
-        "match_id": 27,
-        "round": "Group E",
-        "home_team": "Brazil",
-        "away_team": "Italy",
-        "available_tickets": 500
+        match_id: 22,
+        round: 'Group D',
+        home_team: 'Argentina',
+        away_team: 'France',
+        available_tickets: 500
     },
     {
-        "match_id": 28,
-        "round": "Group E",
-        "home_team": "Germany",
-        "away_team": "Spain",
-        "available_tickets": 500
+        match_id: 23,
+        round: 'Group D',
+        home_team: 'Portugal',
+        away_team: 'Netherlands',
+        available_tickets: 500
     },
     {
-        "match_id": 29,
-        "round": "Group E",
-        "home_team": "Germany",
-        "away_team": "Italy",
-        "available_tickets": 500
+        match_id: 24,
+        round: 'Group E',
+        home_team: 'Brazil',
+        away_team: 'Germany',
+        available_tickets: 500
     },
     {
-        "match_id": 30,
-        "round": "Group E",
-        "home_team": "Brazil",
-        "away_team": "Spain",
-        "available_tickets": 500
-    },
-
-    {
-        "match_id": 31,
-        "round": "Group F",
-        "home_team": "Netherlands",
-        "away_team": "Portugal",
-        "available_tickets": 500
+        match_id: 25,
+        round: 'Group E',
+        home_team: 'Italy',
+        away_team: 'Spain',
+        available_tickets: 500
     },
     {
-        "match_id": 32,
-        "round": "Group F",
-        "home_team": "Argentina",
-        "away_team": "France",
-        "available_tickets": 500
+        match_id: 26,
+        round: 'Group E',
+        home_team: 'Brazil',
+        away_team: 'Italy',
+        available_tickets: 500
     },
     {
-        "match_id": 33,
-        "round": "Group F",
-        "home_team": "Netherlands",
-        "away_team": "Argentina",
-        "available_tickets": 500
+        match_id: 27,
+        round: 'Group E',
+        home_team: 'Germany',
+        away_team: 'Spain',
+        available_tickets: 500
     },
     {
-        "match_id": 34,
-        "round": "Group F",
-        "home_team": "Portugal",
-        "away_team": "France",
-        "available_tickets": 500
+        match_id: 28,
+        round: 'Group E',
+        home_team: 'Germany',
+        away_team: 'Italy',
+        available_tickets: 500
     },
     {
-        "match_id": 35,
-        "round": "Group F",
-        "home_team": "Portugal",
-        "away_team": "Argentina",
-        "available_tickets": 500
+        match_id: 29,
+        round: 'Group E',
+        home_team: 'Brazil',
+        away_team: 'Spain',
+        available_tickets: 500
     },
     {
-        "match_id": 36,
-        "round": "Group F",
-        "home_team": "Netherlands",
-        "away_team": "France",
-        "available_tickets": 500
-    },
-
-    {
-        "match_id": 37,
-        "round": "Group G",
-        "home_team": "England",
-        "away_team": "Spain",
-        "available_tickets": 500
+        match_id: 30,
+        round: 'Group F',
+        home_team: 'Netherlands',
+        away_team: 'Portugal',
+        available_tickets: 500
     },
     {
-        "match_id": 38,
-        "round": "Group G",
-        "home_team": "Germany",
-        "away_team": "Brazil",
-        "available_tickets": 500
+        match_id: 31,
+        round: 'Group F',
+        home_team: 'Argentina',
+        away_team: 'France',
+        available_tickets: 500
     },
     {
-        "match_id": 39,
-        "round": "Group G",
-        "home_team": "England",
-        "away_team": "Germany",
-        "available_tickets": 500
+        match_id: 32,
+        round: 'Group F',
+        home_team: 'Netherlands',
+        away_team: 'Argentina',
+        available_tickets: 500
     },
     {
-        "match_id": 40,
-        "round": "Group G",
-        "home_team": "Spain",
-        "away_team": "Brazil",
-        "available_tickets": 500
+        match_id: 33,
+        round: 'Group F',
+        home_team: 'Portugal',
+        away_team: 'France',
+        available_tickets: 500
     },
     {
-        "match_id": 41,
-        "round": "Group G",
-        "home_team": "Spain",
-        "away_team": "Germany",
-        "available_tickets": 500
+        match_id: 34,
+        round: 'Group F',
+        home_team: 'Portugal',
+        away_team: 'Argentina',
+        available_tickets: 500
     },
     {
-        "match_id": 42,
-        "round": "Group G",
-        "home_team": "England",
-        "away_team": "Brazil",
-        "available_tickets": 500
-    },
-
-    {
-        "match_id": 43,
-        "round": "Group H",
-        "home_team": "Romania",
-        "away_team": "Senegal",
-        "available_tickets": 500
+        match_id: 35,
+        round: 'Group F',
+        home_team: 'Netherlands',
+        away_team: 'France',
+        available_tickets: 500
     },
     {
-        "match_id": 44,
-        "round": "Group H",
-        "home_team": "Mexico",
-        "away_team": "Saudi Arabia",
-        "available_tickets": 500
+        match_id: 36,
+        round: 'Group G',
+        home_team: 'England',
+        away_team: 'Spain',
+        available_tickets: 500
     },
     {
-        "match_id": 45,
-        "round": "Group H",
-        "home_team": "Romania",
-        "away_team": "Mexico",
-        "available_tickets": 500
+        match_id: 37,
+        round: 'Group G',
+        home_team: 'Germany',
+        away_team: 'Brazil',
+        available_tickets: 500
     },
     {
-        "match_id": 46,
-        "round": "Group H",
-        "home_team": "Senegal",
-        "away_team": "Saudi Arabia",
-        "available_tickets": 500
+        match_id: 38,
+        round: 'Group G',
+        home_team: 'England',
+        away_team: 'Germany',
+        available_tickets: 500
     },
     {
-        "match_id": 47,
-        "round": "Group H",
-        "home_team": "Senegal",
-        "away_team": "Mexico",
-        "available_tickets": 500
+        match_id: 39,
+        round: 'Group G',
+        home_team: 'Spain',
+        away_team: 'Brazil',
+        available_tickets: 500
     },
     {
-        "match_id": 48,
-        "round": "Group H",
-        "home_team": "Romania",
-        "away_team": "Saudi Arabia",
-        "available_tickets": 500
+        match_id: 40,
+        round: 'Group G',
+        home_team: 'Spain',
+        away_team: 'Germany',
+        available_tickets: 500
+    },
+    {
+        match_id: 41,
+        round: 'Group G',
+        home_team: 'England',
+        away_team: 'Brazil',
+        available_tickets: 500
+    },
+    {
+        match_id: 42,
+        round: 'Group H',
+        home_team: 'Romania',
+        away_team: 'Senegal',
+        available_tickets: 500
+    },
+    {
+        match_id: 43,
+        round: 'Group H',
+        home_team: 'Mexico',
+        away_team: 'Saudi Arabia',
+        available_tickets: 500
+    },
+    {
+        match_id: 44,
+        round: 'Group H',
+        home_team: 'Romania',
+        away_team: 'Mexico',
+        available_tickets: 500
+    },
+    {
+        match_id: 45,
+        round: 'Group H',
+        home_team: 'Senegal',
+        away_team: 'Saudi Arabia',
+        available_tickets: 500
+    },
+    {
+        match_id: 46,
+        round: 'Group H',
+        home_team: 'Senegal',
+        away_team: 'Mexico',
+        available_tickets: 500
+    },
+    {
+        match_id: 47,
+        round: 'Group H',
+        home_team: 'Romania',
+        away_team: 'Saudi Arabia',
+        available_tickets: 500
     }
 ];
 

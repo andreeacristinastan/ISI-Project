@@ -45,6 +45,7 @@ import Track from '@arcgis/core/widgets/Track';
 import {addressToLocations} from '@arcgis/core/rest/locator';
 import Search from '@arcgis/core/widgets/Search';
 import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
+import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 
 @Component({
   selector: "app-esri-map",
@@ -94,6 +95,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.stadiums$ = firestoreService.getAllStadiums();
   }
 
+  btnClick() {
+    console.log("click");
+  }
+
   initializeSearch() {
     const searchWidgetProperties = {
       view: this.view,
@@ -131,7 +136,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       };
 
       Config.apiKey =
-        "AAPK619bcbe1049045bbb6da1081e59967fczZuISsqzAJ2uJvhaa7AH8zz2N7mlE4HSyicdWutpdrf-tkdhtUCGEc4WBYKUDdou";
+        "AAPKfbcd09cc6b514f5897231e856a6d7e72sbTqqtZS449zXhWTC431pN-j1GNqiz-riCYgprGX9WisRZz72AiR2gNmZWc6P3k4";
 
       this.map = new WebMap(mapProperties);
 
@@ -173,8 +178,9 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   }
 
   bookTicket() {
+    console.log(this.selectedMatchId);
     let res = this.firestoreService.bookTicket(this.selectedMatchId);
-
+    console.log(res);
   }
 
 
@@ -223,6 +229,16 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   addGraphicLayers() {
     this.graphicsLayer = new GraphicsLayer();
     this.map.add(this.graphicsLayer, 0);
+  }
+
+  test_func(e, match_id: number) {
+    this.selectedMatchId = match_id;
+    this.handleMatchSelect(match_id.toString());
+
+
+    console.log(this.selectedMatchId);
+  
+    this.bookTicket();
   }
 
   addFeatureLayers() {
@@ -274,11 +290,46 @@ export class EsriMapComponent implements OnInit, OnDestroy {
                 style: "circle",
                 yoffset: `${cnt * 15} px`,
               };
+
+
+              let btn;
               const popupTemplate = {
                 title: "{round}: {home_team} - {away_team}",
-                content: `<div><a href='' onclick='alert('@TODO BOOK TICKET')' style='cursor:pointer;display:inline-block;padding:10px 20px;margin:5px;color:#fff;background-color:#0079c1;text-decoration:none;border-radius:5px;'>Book a ticket</a></div>`  ,
-                
+                content:[							
+                  {
+                    type: "text",
+                    text: "Description",
+                  },
+                  {
+                    type: "fields",
+                    fieldInfos: [
+                      {
+                        fieldName: "available_tickets",
+                        label: "Available Tickets",
+                      },
+                    ],
+                  },
+                  {
+                    type: "text",
+                    text: " {round}: {home_team} vs. {away_team}\n 2026 World Cup.",
+                  },
+                  
+                  
+                  
+                  {
+                  type: "custom",
+                  creator: (graphic: any) => {
+                    // could also check if button already created
+                    // and just reuse it
+                    btn = document.createElement("button");
+                    btn.innerText = "Click me";
+                    btn.classList.add("mat-raised-button")
+                    btn.addEventListener("click", (e) => this.test_func(e, graphic.graphic.attributes.match_id));
+                    return btn;
+                  }
+                }]  
               };
+
               const attributes = {
                 ...match,
               };
@@ -299,7 +350,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
     const stadiumsLayer = new FeatureLayer({
       portalItem: {
-        id: "6a1b7f8182944170b50e8f764d15c1df",
+        id: "c864354508b54ea1a5ba8ecd06c68145",
       },
     });
 
@@ -307,7 +358,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
     const matchesLayer = new FeatureLayer({
       portalItem: {
-        id: "fd18eeb1f92848d0a794894ebcefa0e4",
+        id: "8d15085bb9e9435bacd757eaa9479193",
       },
     });
 
@@ -315,7 +366,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
     const stadiums2026 = new FeatureLayer({
       portalItem: {
-        id: "28f8638baed24a9ab91a3d48ad31fff2",
+        id: "1265855a1e9248d9a39e29e1005d582f",
       },
     });
 
