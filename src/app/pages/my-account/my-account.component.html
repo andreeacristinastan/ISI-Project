@@ -1,2 +1,32 @@
-<p *ngIf="user">Email: {{ user.email }}</p>
+<!-- <p *ngIf="user">Email: {{ user.email }}</p>
 <p *ngIf="!user">No user is currently logged in.</p>
+
+<hr>
+
+<h3>My tickets:</h3>
+<div *ngFor="let ticket of tickets">
+    <p>{{ticket}}</p>
+    <hr>
+  </div> -->
+
+  <div class="container mt-4">
+    <div *ngIf="user" class="card">
+      <div class="card-body">
+        <h4 class="card-title">User Information</h4>
+        <p class="card-text">Email: {{ user.email }}</p>
+      </div>
+    </div>
+    <div *ngIf="!user" class="alert alert-warning mt-3" role="alert">
+      No user is currently logged in.
+    </div>
+  
+    <hr class="mt-4">
+  
+    <h3 class="mt-4">My Tickets:</h3>
+    <div *ngFor="let ticket of tickets" class="card mt-2">
+      <div class="card-body">
+        <p class="card-text">{{ ticket }}</p>
+      </div>
+    </div>
+  </div>
+  
