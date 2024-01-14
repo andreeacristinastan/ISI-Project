@@ -40,11 +40,15 @@ import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { DataService } from "src/app/services/database/data.service";
 import { IMatch } from "src/app/models/match";
 import { IStadium } from "src/app/models/stadium";
-import Locate from '@arcgis/core/widgets/Locate';
-import Track from '@arcgis/core/widgets/Track';
-import {addressToLocations} from '@arcgis/core/rest/locator';
-import Search from '@arcgis/core/widgets/Search';
-import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
+import Locate from "@arcgis/core/widgets/Locate";
+import Track from "@arcgis/core/widgets/Track";
+import { addressToLocations } from "@arcgis/core/rest/locator";
+import Search from "@arcgis/core/widgets/Search";
+import { SimpleMarkerSymbol } from "@arcgis/core/symbols";
+import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
+import RouteParameters from "@arcgis/core/rest/support/RouteParameters.js";
+import FeatureSet from "@arcgis/core/rest/support/FeatureSet.js";
+import * as route from "@arcgis/core/rest/route.js";
 
 @Component({
   selector: "app-esri-map",
@@ -72,7 +76,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   dir: number = 0;
   count: number = 0;
   timeoutHandler = null;
-
+  routeUrl =
+    "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
 
   // firebase sync
   isConnected: boolean = false;
@@ -83,7 +88,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   stadiums$: Observable<any>;
 
   selectedStadium: IStadium;
-  selectedMatchId: number = -1;
+  selectedMatch: IMatch;
+  displayedMatches = [];
+
+  routingEnabled = false;
 
   constructor(
     private fbs: FirebaseService,
@@ -94,34 +102,159 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.stadiums$ = firestoreService.getAllStadiums();
   }
 
+  viewMatches(stadium: IStadium): void {
+    console.log(stadium);
+    let allMatches = [] as IMatch[];
+
+    this.matches$.forEach((matches: IMatch[]) => {
+      allMatches = matches.filter((match: IMatch) =>
+        stadium.next_matches.includes(match.match_id)
+      );
+      this.displayedMatches = allMatches;
+    });
+
+    this.selectedStadium = stadium;
+
+    this.view.goTo({
+      center: new Point({
+        longitude: stadium.longitude,
+        latitude: stadium.latitude,
+      }),
+      zoom: 5,
+    });
+  }
+
+  btnClick() {
+    console.log("click");
+  }
+
+  addRoutingGraphic(type, point) {
+    const graphic = new Graphic({
+      symbol: {
+        type: "simple-marker",
+        color: type === "origin" ? "white" : "black",
+        size: "8px",
+      } as any,
+      geometry: point,
+    });
+    this.view.graphics.add(graphic);
+  }
+
+  initializeRouting() {
+    console.log("my  view is:");
+
+    console.log(this.view);
+
+    this.view.on("click", (event) => {
+      if (this.routingEnabled ) {
+        if (this.view.graphics.length !== 0 || !this.selectedStadium) {
+          this.view.graphics.removeAll();
+          this.view.ui.empty("top-left");
+          return;
+        }
+
+
+
+        this.addRoutingGraphic("origin", event.mapPoint);
+        this.addRoutingGraphic(
+          "destination",
+          new Point({
+            latitude: this.selectedStadium.latitude,
+            longitude: this.selectedStadium.longitude,
+          })
+        );
+        this.getRoute();
+      }
+    });
+  }
+
   initializeSearch() {
     const searchWidgetProperties = {
       view: this.view,
       popupEnabled: false,
     };
-  
+
     this.searchWidget = new Search(searchWidgetProperties);
-  
-    this.searchWidget.on('select-result', (event) => {
+
+    this.searchWidget.on("select-result", (event) => {
       const selectedResult = event.result;
       this.view.goTo({
         target: selectedResult.extent,
         zoom: 10,
       });
     });
-  
-    this.searchWidget.on('search-clear', () => {
+
+    this.searchWidget.on("search-clear", () => {
       this.view.goTo({
         center: this.center,
         zoom: this.zoom,
       });
     });
-  
+
     this.view.ui.add(this.searchWidget, {
-      position: 'top-right',
+      position: "top-right",
     });
   }
-  
+
+  getRoute() {
+    const routeParams = new RouteParameters({
+      stops: new FeatureSet({
+        features: this.view.graphics.toArray(),
+      }),
+
+      returnDirections: true,
+    });
+
+    console.log(routeParams.stops);
+
+    console.log(this.routeUrl);
+    console.log(this.view);
+
+    route
+      .solve(this.routeUrl, routeParams)
+      .then((data) => {
+        data.routeResults.forEach((result) => {
+          result.route.symbol = {
+            type: "simple-line",
+            color: [5, 150, 255],
+            width: 3,
+          } as any;
+          this.view.graphics.add(result.route);
+        });
+
+        if (data.routeResults.length > 0) {
+          const directions = document.createElement("ol");
+          directions.classList.add("esri-widget");
+          directions.classList.add("esri-widget--panel");
+          directions.classList.add("esri-directions__scroller");
+          directions.style.marginTop = "0";
+          directions.style.padding = "15px 15px 15px 30px";
+          directions.style.maxHeight = "200px";
+          const features = data.routeResults[0].directions.features;
+
+          // Show each direction
+          features.forEach(function (result, i) {
+            const direction = document.createElement("li");
+            direction.innerHTML =
+              result.attributes.text +
+              " (" +
+              result.attributes.length.toFixed(2) +
+              " miles)";
+            directions.appendChild(direction);
+          });
+
+          this.view.ui.empty("top-left");
+          this.view.ui.add(directions, "top-left");
+        }
+      })
+      .catch(function (error) {
+        console.log("my err:");
+
+        console.log(error);
+      });
+
+    // Display directions
+  }
 
   async initializeMap() {
     try {
@@ -131,7 +264,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       };
 
       Config.apiKey =
-        "AAPK619bcbe1049045bbb6da1081e59967fczZuISsqzAJ2uJvhaa7AH8zz2N7mlE4HSyicdWutpdrf-tkdhtUCGEc4WBYKUDdou";
+        "AAPKfbcd09cc6b514f5897231e856a6d7e72sbTqqtZS449zXhWTC431pN-j1GNqiz-riCYgprGX9WisRZz72AiR2gNmZWc6P3k4";
 
       this.map = new WebMap(mapProperties);
 
@@ -158,6 +291,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       });
 
       await this.view.when(); // wait for map to load
+
       console.log("ArcGIS map loaded");
       console.log(
         "Map center: " +
@@ -166,6 +300,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
           this.view.center.longitude
       );
       this.initializeSearch();
+
       return this.view;
     } catch (error) {
       console.log("EsriLoader: ", error);
@@ -173,20 +308,19 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   }
 
   bookTicket() {
-    let res = this.firestoreService.bookTicket(this.selectedMatchId);
-
+    console.log(this.selectedMatch.match_id);
+    let res = this.firestoreService.bookTicket(this.selectedMatch.match_id);
+    console.log(res);
   }
 
-
   handleMatchSelect(match_id: string) {
-
-    if(parseInt(match_id) == -1) {
-      this.view.goTo({center: this.center, zoom: this.zoom})
+    if (parseInt(match_id) == -1) {
+      this.view.goTo({ center: this.center, zoom: this.zoom });
       return;
     }
 
-
     this.stadiums$.forEach((stadiums: IStadium[]) => {
+      let matchingStadium = null;
       for (let stadium of stadiums) {
         if (stadium.next_matches.includes(parseInt(match_id))) {
           this.view.goTo({
@@ -196,17 +330,6 @@ export class EsriMapComponent implements OnInit, OnDestroy {
             }),
             zoom: 5,
           });
-        }
-      }
-    });
-
-    this.stadiums$.forEach((stadiums) => {
-      let matchingStadium = null;
-      for (const stadium of stadiums) {
-        if (
-          stadium.next_matches &&
-          stadium.next_matches.includes(parseInt(match_id))
-        ) {
           matchingStadium = stadium;
           break;
         }
@@ -223,6 +346,15 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   addGraphicLayers() {
     this.graphicsLayer = new GraphicsLayer();
     this.map.add(this.graphicsLayer, 0);
+  }
+
+  bookFromPopup(e, match: IMatch) {
+    this.selectedMatch = match;
+    this.handleMatchSelect(match.match_id.toString());
+
+    console.log(this.selectedMatch);
+
+    this.bookTicket();
   }
 
   addFeatureLayers() {
@@ -274,11 +406,50 @@ export class EsriMapComponent implements OnInit, OnDestroy {
                 style: "circle",
                 yoffset: `${cnt * 15} px`,
               };
+
+              let btn;
               const popupTemplate = {
                 title: "{round}: {home_team} - {away_team}",
-                content: `<div><a href='' onclick='alert('@TODO BOOK TICKET')' style='cursor:pointer;display:inline-block;padding:10px 20px;margin:5px;color:#fff;background-color:#0079c1;text-decoration:none;border-radius:5px;'>Book a ticket</a></div>`  ,
-                
+                content: [
+                  {
+                    type: "text",
+                    text: "Description",
+                  },
+                  {
+                    type: "fields",
+                    fieldInfos: [
+                      {
+                        fieldName: "available_tickets",
+                        label: "Available Tickets",
+                      },
+                    ],
+                  },
+                  {
+                    type: "text",
+                    text: " {round}: {home_team} vs. {away_team}\n 2026 World Cup.",
+                  },
+
+                  {
+                    type: "custom",
+                    creator: (graphic: any) => {
+                      // could also check if button already created
+                      // and just reuse it
+                      btn = document.createElement("button");
+                      btn.innerText = "Book a ticket";
+                      btn.classList.add("mat-raised-button")
+                      btn.classList.add("mat-focus-indicator");
+                      btn.classList.add("mat-button-base");
+                      btn.classList.add("mat-primary");
+                      btn.setAttribute("color", "primary");
+                      btn.addEventListener("click", (e) =>
+                        this.bookFromPopup(e, { ...graphic.graphic.attributes })
+                      );
+                      return btn;
+                    },
+                  },
+                ],
               };
+
               const attributes = {
                 ...match,
               };
@@ -299,7 +470,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
     const stadiumsLayer = new FeatureLayer({
       portalItem: {
-        id: "6a1b7f8182944170b50e8f764d15c1df",
+        id: "c864354508b54ea1a5ba8ecd06c68145",
       },
     });
 
@@ -307,7 +478,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
     const matchesLayer = new FeatureLayer({
       portalItem: {
-        id: "fd18eeb1f92848d0a794894ebcefa0e4",
+        id: "8d15085bb9e9435bacd757eaa9479193",
       },
     });
 
@@ -315,7 +486,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
     const stadiums2026 = new FeatureLayer({
       portalItem: {
-        id: "28f8638baed24a9ab91a3d48ad31fff2",
+        id: "1265855a1e9248d9a39e29e1005d582f",
       },
     });
 
@@ -359,38 +530,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.timeoutHandler = setTimeout(() => {
       // code to execute continuously until the view is closed
       // ...
-      this.animatePointDemo();
       this.runTimer();
     }, 200);
-  }
-
-  animatePointDemo() {
-    this.removePoint();
-    switch (this.dir) {
-      case 0:
-        this.pointCoords[1] += 0.01;
-        break;
-      case 1:
-        this.pointCoords[0] += 0.02;
-        break;
-      case 2:
-        this.pointCoords[1] -= 0.01;
-        break;
-      case 3:
-        this.pointCoords[0] -= 0.02;
-        break;
-    }
-
-    this.count += 1;
-    if (this.count >= 10) {
-      this.count = 0;
-      this.dir += 1;
-      if (this.dir > 3) {
-        this.dir = 0;
-      }
-    }
-
-    this.addPoint(this.pointCoords[1], this.pointCoords[0], true);
   }
 
   stopTimer() {
@@ -457,6 +598,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       // console.log("mapView ready: ", this.view.ready);
       this.loaded = this.view.ready;
       this.runTimer();
+      this.initializeRouting();
     });
   }
 

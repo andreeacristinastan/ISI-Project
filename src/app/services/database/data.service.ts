@@ -29,7 +29,7 @@ export class DataService {
       console.log("Booking ticket...");
       
       // @TODO Add user checking
-   
+      
         this.db.object(`matches/${matchId}/available_tickets`).query.ref.transaction(tickets => {
           console.log(tickets); return tickets - 1000;});
          

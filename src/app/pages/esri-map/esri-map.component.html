@@ -1,8 +1,8 @@
 <!-- Here's the DIV that we inject the map into -->
 
 <div fxLayout="row">
-  <div class="form-group" fxLayout="column">
-    <label for="category">Match selection</label>
+  <div class="form-group" fxFlex="20%" fxLayout="column">
+    <!-- <label for="category">Match selection</label>
     <select
       (change)="handleMatchSelect($event.target.value)"
       [(ngModel)]="selectedMatchId"
@@ -11,63 +11,104 @@
       <option class="" *ngFor="let m of matches$ | async" [value]="m.match_id">
         {{ m.round }} {{ m.home_team }} - {{ m.away_team }}
       </option>
-    </select>
+    </select> -->
 
-    <p>Selected match id: {{ selectedMatchId }}</p>
+    <div style="padding: 0.5rem">
+      <!-- <p>{{ selectedStadium.name }}</p>
+      <p>{{ selectedStadium.capacity }}</p> -->
 
-    <div *ngIf="selectedStadium !== undefined">
-      <p>{{ selectedStadium.name }}</p>
-      <p>{{ selectedStadium.capacity }}</p>
+      <mat-card
+        *ngIf="selectedStadium !== undefined && selectedMatch !== undefined"
+      >
+        <mat-card-title>My Selection:</mat-card-title>
+        <mat-card-content>
+          <p>
+            {{ selectedStadium.name }}, capacity: {{ selectedStadium.capacity }}
+          </p>
+          <p>
+            {{ selectedMatch.round }}: {{ selectedMatch.home_team }} -
+            {{ selectedMatch.away_team }}
+          </p>
+          <button mat-raised-button color="primary" (click)="bookTicket()">
+            Book a ticket
+          </button>
+        </mat-card-content>
+      </mat-card>
     </div>
 
-    <button (click)="bookTicket()">Book a ticket</button>
+    <div style="width: 100%; padding: 0.5rem">
+      <h3>Displayed Matches</h3>
+      <mat-list *ngIf="displayedMatches">
+        <div *ngFor="let match of displayedMatches">
+          <div fxLayout="column">
+            <div fxLayout="column">
+              <span>
+                {{ match.round }}: {{ match.home_team }} VS
+                {{ match.away_team }}
+              </span>
+              <span>Available tickets: {{ match.available_tickets }}</span>
+              <button
+                mat-button
+                color="primary"
+                (click)="selectedMatch = match"
+              >
+                Select Match
+              </button>
+            </div>
+            <mat-divider></mat-divider>
+          </div>
+        </div>
+      </mat-list>
+    </div>
+
+    <mat-slide-toggle [(ngModel)]="routingEnabled" color="primary">
+      Enable routing on click
+    </mat-slide-toggle>
   </div>
 
-  <div fxFlex="20%" fxLayout="column">
-    <mat-list>
-      <!-- <mat-list-item> -->
-      <!-- <span class="label">Firebase</span> -->
-      <!-- </mat-list-item> -->
-      <!-- <mat-divider></mat-divider> -->
-      <!-- <mat-list-item> -->
-      <!-- <button
-          mat-button
-          mat-button
-          color="primary"
-          class="full-w"
-          (click)="connectFirebase()"
-          style="color: rgb(94, 133, 111)"
-        > -->
-      <!-- Connect -->
-      <!-- </button> -->
-      <!-- </mat-list-item> -->
-      <!-- <mat-divider></mat-divider> -->
-      <mat-list-item>
-        <button
-          mat-button
-          mat-button
-          color="primary"
-          class="full-w"
-          (click)="addPointItem()"
-          style="color: rgb(94, 133, 111)"
-        >
-          Add item
-        </button>
-      </mat-list-item>
-    </mat-list>
-
-    <!-- <form>
-      <input type="email" id="email" />
-      <label for="email">Email</label>
-      <br />
-      <input type="password" id="password" />
-      <label for="password">Password</label>
-      <br />
-      <button id="login-btn">Login</button>
-      <button id="logout-btn">Logout</button>
-    </form> -->
-  </div>
-  <div fxFlex="80%">
+  <div fxFlex="80%" fxLayout="column" style="max-height: 100%">
     <div #mapViewNode></div>
+    <div
+      fxLayout="row"
+      fxLayoutGap="10px"
+      style="overflow-x: auto"
+      fxLayoutAlign="start center"
+    >
+      <mat-card
+        *ngFor="let stadium of stadiums$ | async"
+        style="
+          min-width: 300px;
+          min-height: fit-content;
+          height: 400px;
+          max-height: 100%;
+        "
+      >
+        <mat-card-header>
+          <mat-card-title>{{ stadium.name }}</mat-card-title>
+          <mat-card-subtitle
+            >{{ stadium.city }} - {{ stadium.country }}</mat-card-subtitle
+          >
+        </mat-card-header>
+        <img
+          mat-card-image
+          [src]="stadium.photo"
+          alt="{{ stadium.name }}"
+          height="200"
+          width="200"
+        />
+        <mat-card-content>
+          <p>Capacity: {{ stadium.capacity }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="viewMatches(stadium)"
+          >
+            View Matches
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   </div>
 </div>
