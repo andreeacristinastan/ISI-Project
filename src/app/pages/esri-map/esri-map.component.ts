@@ -45,6 +45,7 @@ import Track from '@arcgis/core/widgets/Track';
 import {addressToLocations} from '@arcgis/core/rest/locator';
 import Search from '@arcgis/core/widgets/Search';
 import { SimpleMarkerSymbol } from '@arcgis/core/symbols';
+import { User } from 'firebase/auth';
 
 @Component({
   selector: "app-esri-map",
@@ -63,6 +64,11 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   graphicsLayer: esri.GraphicsLayer;
   searchWidget: esri.widgetsSearch;
 
+
+  //user
+  user: User | null = null;
+
+
   // Attributes
   zoom = 2;
   center: Array<number> = [-98.5795, 45.8283];
@@ -72,7 +78,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   dir: number = 0;
   count: number = 0;
   timeoutHandler = null;
-
+  userEmail: string = "";
 
   // firebase sync
   isConnected: boolean = false;
@@ -88,7 +94,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   constructor(
     private fbs: FirebaseService,
     private authService: AuthenticationService,
-    private firestoreService: DataService
+    private firestoreService: DataService,
+    private afAuth: AngularFireAuth
   ) {
     this.matches$ = firestoreService.getAllMatches();
     this.stadiums$ = firestoreService.getAllStadiums();
@@ -173,8 +180,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   }
 
   bookTicket() {
-    let res = this.firestoreService.bookTicket(this.selectedMatchId);
-
+    let res = this.firestoreService.bookTicket(this.selectedMatchId, this.userEmail);
   }
 
 
@@ -448,6 +454,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.authService.isAuthenticated.subscribe((isAuth) => {
       if (isAuth) {
         console.log("Utilizatorul este autentificat!");
+        this.afAuth.authState.subscribe(user => {
+          this.user = user;
+          this.userEmail = user.email;
+        });
       } else {
         console.log("Utilizatorul nu este autentificat!");
       }

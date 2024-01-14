@@ -345,7 +345,7 @@
       "age": "",
       "country": "",
       "phone_number": "",
-      "tickets_booked": "",
+      "tickets_booked":[null],
       "password": "",
       "username": ""
     }

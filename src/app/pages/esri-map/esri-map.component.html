@@ -20,7 +20,7 @@
       <p>{{ selectedStadium.capacity }}</p>
     </div>
 
-    <button (click)="bookTicket()">Book a ticket</button>
+    <button [disabled]="!user" (click)="bookTicket()">Book a ticket</button>
   </div>
 
   <div fxFlex="20%" fxLayout="column">
