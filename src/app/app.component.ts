@@ -22,11 +22,6 @@ export class AppComponent {
     // link: '/home'
   /*},*/ 
   {
-    name: 'List of stadiums',
-    link: '/liststadiums'
-  },
-  
-  {
     name: 'Map',
     link: '/map'
   },

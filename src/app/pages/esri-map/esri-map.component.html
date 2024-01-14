@@ -29,7 +29,11 @@
             {{ selectedMatch.round }}: {{ selectedMatch.home_team }} -
             {{ selectedMatch.away_team }}
           </p>
-          <button mat-raised-button color="primary" (click)="bookTicket()">
+          <button
+            mat-raised-button
+            class="custom-button"
+            (click)="bookTicket()"
+          >
             Book a ticket
           </button>
         </mat-card-content>
@@ -41,7 +45,7 @@
       <mat-list *ngIf="displayedMatches">
         <div *ngFor="let match of displayedMatches">
           <div fxLayout="column">
-            <div fxLayout="column">
+            <div fxLayout="column" fxLayoutAlign="center start">
               <span>
                 {{ match.round }}: {{ match.home_team }} VS
                 {{ match.away_team }}
@@ -49,8 +53,8 @@
               <span>Available tickets: {{ match.available_tickets }}</span>
               <button
                 mat-button
-                color="primary"
                 (click)="selectedMatch = match"
+                class="custom-button"
               >
                 Select Match
               </button>
@@ -102,8 +106,8 @@
         <mat-card-actions>
           <button
             mat-raised-button
-            color="primary"
             (click)="viewMatches(stadium)"
+            class="custom-button"
           >
             View Matches
           </button>

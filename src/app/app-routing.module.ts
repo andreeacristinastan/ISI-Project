@@ -31,11 +31,6 @@ export const routes: Routes = [
   //   redirectTo: 'myaccount',
   // },
   {
-    path: 'liststadiums',
-    loadChildren: () => import('./pages/liststadiums/liststadiums.module')
-    .then(m => m.ListstadiumsModule)
-  },
-  {
     path: 'map',
     component: EsriMapComponent,
   },
