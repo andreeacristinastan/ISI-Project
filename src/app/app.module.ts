@@ -31,6 +31,7 @@ import {
   MatSlideToggleModule,
   _MatSlideToggleRequiredValidatorModule,
 } from '@angular/material/slide-toggle';
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 @NgModule({
   declarations: [AppComponent, EsriMapComponent, HomeComponent],
@@ -50,6 +51,7 @@ import {
     AngularFireModule.initializeApp(environment.firebase, 'AngularDemoArcGIS'),
     AngularFireDatabaseModule,
     AngularFireAuthModule,
+    MatSnackBarModule,
     FormsModule
   ],
   providers: [

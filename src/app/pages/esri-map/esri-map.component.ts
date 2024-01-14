@@ -33,19 +33,12 @@ import Graphic from "@arcgis/core/Graphic";
 import Point from "@arcgis/core/geometry/Point";
 import { AuthenticationService } from "src/app/services/database/authentication.service";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
-import Query from "@arcgis/core/rest/support/Query";
 import "firebase/auth";
 import { AngularFireAuth } from "@angular/fire/compat/auth";
-import { AngularFirestore } from "@angular/fire/compat/firestore";
 import { DataService } from "src/app/services/database/data.service";
 import { IMatch } from "src/app/models/match";
 import { IStadium } from "src/app/models/stadium";
-import Locate from "@arcgis/core/widgets/Locate";
-import Track from "@arcgis/core/widgets/Track";
-import { addressToLocations } from "@arcgis/core/rest/locator";
 import Search from "@arcgis/core/widgets/Search";
-import { SimpleMarkerSymbol } from "@arcgis/core/symbols";
-import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 import RouteParameters from "@arcgis/core/rest/support/RouteParameters.js";
 import FeatureSet from "@arcgis/core/rest/support/FeatureSet.js";
 import * as route from "@arcgis/core/rest/route.js";
@@ -68,10 +61,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   graphicsLayer: esri.GraphicsLayer;
   searchWidget: esri.widgetsSearch;
 
-
   //user
   user: User | null = null;
-
 
   // Attributes
   zoom = 2;
@@ -105,11 +96,12 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     private fbs: FirebaseService,
     private authService: AuthenticationService,
     private firestoreService: DataService,
-    private afAuth: AngularFireAuth
+    private afAuth: AngularFireAuth,
   ) {
     this.matches$ = firestoreService.getAllMatches();
     this.stadiums$ = firestoreService.getAllStadiums();
   }
+
 
   viewMatches(stadium: IStadium): void {
     console.log(stadium);
@@ -449,9 +441,21 @@ export class EsriMapComponent implements OnInit, OnDestroy {
                       btn.innerText = "Book a ticket";
                       btn.classList.add("mat-raised-button")
                       btn.classList.add("mat-focus-indicator");
-                      btn.classList.add("mat-button-base");
-                      btn.classList.add("custom-button");
+                      // btn.classList.add("mat-button-base");
+                      // btn.classList.add("custom-button[_ngcontent-snh-c63]");
                       btn.style.cssText += 'color:white;background-color:#4caf50';
+
+                      this.authService.isAuthenticated.subscribe((isAuth) => {
+                        if (!isAuth) {
+                          btn.disabled = !isAuth;
+                        }
+
+                        if(btn.disabled) {
+                          btn.style.cssText = "color:#a6a6a6;background-color:#e0e0e0;cursor:none";
+                        }
+                      });
+
+
                       btn.addEventListener("click", (e) =>
                         this.bookFromPopup(e, { ...graphic.graphic.attributes })
                       );
