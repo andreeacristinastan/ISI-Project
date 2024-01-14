@@ -439,8 +439,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
                       btn.classList.add("mat-raised-button")
                       btn.classList.add("mat-focus-indicator");
                       btn.classList.add("mat-button-base");
-                      btn.classList.add("mat-primary");
-                      btn.setAttribute("color", "primary");
+                      btn.classList.add("custom-button");
+                      btn.style.cssText += 'color:white;background-color:#4caf50';
                       btn.addEventListener("click", (e) =>
                         this.bookFromPopup(e, { ...graphic.graphic.attributes })
                       );
