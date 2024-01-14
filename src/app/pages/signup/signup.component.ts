@@ -89,12 +89,16 @@ export class SignupComponent implements OnInit {
               age: this.form.value.age,
               country: this.form.value.country,
               phoneNumber: this.form.value.phoneNumber,
-              tickets_booked: 0, // Initialize as empty array or set a default value
+              tickets_booked: ["aaa"], // Initialize as empty array or set a default value
               password: this.form.value.password // Make sure to handle this securely
               // username: this.form.value.username
             };
         
-            this.db.list('Users').push(userData)
+            this.db.list('users').push(userData)
+              .then(() => console.log('User added'))
+              .catch(error => console.error('Error adding user: ', error));
+
+              this.db.list('Users').push(userData)
               .then(() => console.log('User added'))
               .catch(error => console.error('Error adding user: ', error));
 
