@@ -2,7 +2,7 @@
 
 <div fxLayout="row">
   <div class="form-group" fxFlex="20%" fxLayout="column">
-    <label for="category">Match selection</label>
+    <!-- <label for="category">Match selection</label>
     <select
       (change)="handleMatchSelect($event.target.value)"
       [(ngModel)]="selectedMatchId"
@@ -11,30 +11,59 @@
       <option class="" *ngFor="let m of matches$ | async" [value]="m.match_id">
         {{ m.round }} {{ m.home_team }} - {{ m.away_team }}
       </option>
-    </select>
+    </select> -->
 
-    <p>Selected match id: {{ selectedMatchId }}</p>
+    <div style="padding: 0.5rem">
+      <!-- <p>{{ selectedStadium.name }}</p>
+      <p>{{ selectedStadium.capacity }}</p> -->
 
-    <div *ngIf="selectedStadium !== undefined">
-      <p>{{ selectedStadium.name }}</p>
-      <p>{{ selectedStadium.capacity }}</p>
+      <mat-card
+        *ngIf="selectedStadium !== undefined && selectedMatch !== undefined"
+      >
+        <mat-card-title>My Selection:</mat-card-title>
+        <mat-card-content>
+          <p>
+            {{ selectedStadium.name }}, capacity: {{ selectedStadium.capacity }}
+          </p>
+          <p>
+            {{ selectedMatch.round }}: {{ selectedMatch.home_team }} -
+            {{ selectedMatch.away_team }}
+          </p>
+          <button mat-raised-button color="primary" (click)="bookTicket()">
+            Book a ticket
+          </button>
+        </mat-card-content>
+      </mat-card>
     </div>
 
-    <button mat-button (click)="bookTicket()">Book a ticket</button>
-
-    <div style="width: 100%">
-      <div class="matches" *ngIf="displayedMatches">
-        <h3>Displayed Matches</h3>
-        <ul>
-          <li *ngFor="let match of displayedMatches" class="match">
-            <p>Match ID: {{ match.match_id }}</p>
-            <p>Round: {{ match.round }}</p>
-            <p>{{ match.home_team }} VS {{ match.away_team }}</p>
-            <p>Available tickets: {{ match.available_tickets }}</p>
-          </li>
-        </ul>
-      </div>
+    <div style="width: 100%; padding: 0.5rem">
+      <h3>Displayed Matches</h3>
+      <mat-list *ngIf="displayedMatches">
+        <div *ngFor="let match of displayedMatches">
+          <div fxLayout="column">
+            <div fxLayout="column">
+              <span>
+                {{ match.round }}: {{ match.home_team }} VS
+                {{ match.away_team }}
+              </span>
+              <span>Available tickets: {{ match.available_tickets }}</span>
+              <button
+                mat-button
+                color="primary"
+                (click)="selectedMatch = match"
+              >
+                Select Match
+              </button>
+            </div>
+            <mat-divider></mat-divider>
+          </div>
+        </div>
+      </mat-list>
     </div>
+
+    <mat-slide-toggle [(ngModel)]="routingEnabled" color="primary">
+      Enable routing on click
+    </mat-slide-toggle>
   </div>
 
   <div fxFlex="80%" fxLayout="column" style="max-height: 100%">

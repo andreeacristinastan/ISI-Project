@@ -88,8 +88,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   stadiums$: Observable<any>;
 
   selectedStadium: IStadium;
-  selectedMatchId: number = -1;
+  selectedMatch: IMatch;
   displayedMatches = [];
+
+  routingEnabled = false;
 
   constructor(
     private fbs: FirebaseService,
@@ -102,12 +104,14 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
   viewMatches(stadium: IStadium): void {
     console.log(stadium);
-    let allMatches = [] as IMatch[]   
+    let allMatches = [] as IMatch[];
 
     this.matches$.forEach((matches: IMatch[]) => {
-      allMatches = matches.filter((match: IMatch) => stadium.next_matches.includes(match.match_id));
+      allMatches = matches.filter((match: IMatch) =>
+        stadium.next_matches.includes(match.match_id)
+      );
       this.displayedMatches = allMatches;
-    })
+    });
 
     this.selectedStadium = stadium;
 
@@ -118,7 +122,6 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       }),
       zoom: 5,
     });
-    
   }
 
   btnClick() {
@@ -143,24 +146,25 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     console.log(this.view);
 
     this.view.on("click", (event) => {
-      if (this.view.graphics.length !== 0) {
-        this.view.graphics.removeAll();
-      }
+      if (this.routingEnabled ) {
+        if (this.view.graphics.length !== 0 || !this.selectedStadium) {
+          this.view.graphics.removeAll();
+          this.view.ui.empty("top-left");
+          return;
+        }
 
-      if (!this.selectedStadium) {
-        this.view.graphics.removeAll();
-        return;
-      }
 
-      this.addRoutingGraphic("origin", event.mapPoint);
-      this.addRoutingGraphic(
-        "destination",
-        new Point({
-          latitude: this.selectedStadium.latitude,
-          longitude: this.selectedStadium.longitude,
-        })
-      );
-      this.getRoute();
+
+        this.addRoutingGraphic("origin", event.mapPoint);
+        this.addRoutingGraphic(
+          "destination",
+          new Point({
+            latitude: this.selectedStadium.latitude,
+            longitude: this.selectedStadium.longitude,
+          })
+        );
+        this.getRoute();
+      }
     });
   }
 
@@ -304,8 +308,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   }
 
   bookTicket() {
-    console.log(this.selectedMatchId);
-    let res = this.firestoreService.bookTicket(this.selectedMatchId);
+    console.log(this.selectedMatch.match_id);
+    let res = this.firestoreService.bookTicket(this.selectedMatch.match_id);
     console.log(res);
   }
 
@@ -316,6 +320,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     }
 
     this.stadiums$.forEach((stadiums: IStadium[]) => {
+      let matchingStadium = null;
       for (let stadium of stadiums) {
         if (stadium.next_matches.includes(parseInt(match_id))) {
           this.view.goTo({
@@ -325,17 +330,6 @@ export class EsriMapComponent implements OnInit, OnDestroy {
             }),
             zoom: 5,
           });
-        }
-      }
-    });
-
-    this.stadiums$.forEach((stadiums) => {
-      let matchingStadium = null;
-      for (const stadium of stadiums) {
-        if (
-          stadium.next_matches &&
-          stadium.next_matches.includes(parseInt(match_id))
-        ) {
           matchingStadium = stadium;
           break;
         }
@@ -354,11 +348,11 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.map.add(this.graphicsLayer, 0);
   }
 
-  test_func(e, match_id: number) {
-    this.selectedMatchId = match_id;
-    this.handleMatchSelect(match_id.toString());
+  bookFromPopup(e, match: IMatch) {
+    this.selectedMatch = match;
+    this.handleMatchSelect(match.match_id.toString());
 
-    console.log(this.selectedMatchId);
+    console.log(this.selectedMatch);
 
     this.bookTicket();
   }
@@ -441,10 +435,14 @@ export class EsriMapComponent implements OnInit, OnDestroy {
                       // could also check if button already created
                       // and just reuse it
                       btn = document.createElement("button");
-                      btn.innerText = "Click me";
-                      btn.classList.add("mat-raised-button");
+                      btn.innerText = "Book a ticket";
+                      btn.classList.add("mat-raised-button")
+                      btn.classList.add("mat-focus-indicator");
+                      btn.classList.add("mat-button-base");
+                      btn.classList.add("mat-primary");
+                      btn.setAttribute("color", "primary");
                       btn.addEventListener("click", (e) =>
-                        this.test_func(e, graphic.graphic.attributes.match_id)
+                        this.bookFromPopup(e, { ...graphic.graphic.attributes })
                       );
                       return btn;
                     },
@@ -532,38 +530,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.timeoutHandler = setTimeout(() => {
       // code to execute continuously until the view is closed
       // ...
-      this.animatePointDemo();
       this.runTimer();
     }, 200);
-  }
-
-  animatePointDemo() {
-    this.removePoint();
-    switch (this.dir) {
-      case 0:
-        this.pointCoords[1] += 0.01;
-        break;
-      case 1:
-        this.pointCoords[0] += 0.02;
-        break;
-      case 2:
-        this.pointCoords[1] -= 0.01;
-        break;
-      case 3:
-        this.pointCoords[0] -= 0.02;
-        break;
-    }
-
-    this.count += 1;
-    if (this.count >= 10) {
-      this.count = 0;
-      this.dir += 1;
-      if (this.dir > 3) {
-        this.dir = 0;
-      }
-    }
-
-    this.addPoint(this.pointCoords[1], this.pointCoords[0], true);
   }
 
   stopTimer() {

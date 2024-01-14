@@ -27,6 +27,10 @@ import { SignupComponent } from './pages/signup/signup.component';
 import { FormsModule } from "@angular/forms";
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatCardModule} from '@angular/material/card';
+import {
+  MatSlideToggleModule,
+  _MatSlideToggleRequiredValidatorModule,
+} from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [AppComponent, EsriMapComponent, HomeComponent],
@@ -41,6 +45,8 @@ import {MatCardModule} from '@angular/material/card';
     MatGridListModule,
     MatCardModule,
     FlexLayoutModule,
+    MatSlideToggleModule,
+    _MatSlideToggleRequiredValidatorModule,
     AngularFireModule.initializeApp(environment.firebase, 'AngularDemoArcGIS'),
     AngularFireDatabaseModule,
     AngularFireAuthModule,
