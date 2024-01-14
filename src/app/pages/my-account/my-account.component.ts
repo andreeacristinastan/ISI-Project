@@ -33,5 +33,8 @@ export class MyAccountComponent implements OnInit {
     } catch (error) {
       console.error("Error retrieving tickets", error);
     }
+    if(this.tickets[0] === "aaa"){
+      this.tickets.pop();
+    }
   }
 }

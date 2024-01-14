@@ -21,51 +21,7 @@
     </div>
 
     <button [disabled]="!user" (click)="bookTicket()">Book a ticket</button>
-  </div>
-
-  <div fxFlex="20%" fxLayout="column">
-    <mat-list>
-      <!-- <mat-list-item> -->
-      <!-- <span class="label">Firebase</span> -->
-      <!-- </mat-list-item> -->
-      <!-- <mat-divider></mat-divider> -->
-      <!-- <mat-list-item> -->
-      <!-- <button
-          mat-button
-          mat-button
-          color="primary"
-          class="full-w"
-          (click)="connectFirebase()"
-          style="color: rgb(94, 133, 111)"
-        > -->
-      <!-- Connect -->
-      <!-- </button> -->
-      <!-- </mat-list-item> -->
-      <!-- <mat-divider></mat-divider> -->
-      <mat-list-item>
-        <button
-          mat-button
-          mat-button
-          color="primary"
-          class="full-w"
-          (click)="addPointItem()"
-          style="color: rgb(94, 133, 111)"
-        >
-          Add item
-        </button>
-      </mat-list-item>
-    </mat-list>
-
-    <!-- <form>
-      <input type="email" id="email" />
-      <label for="email">Email</label>
-      <br />
-      <input type="password" id="password" />
-      <label for="password">Password</label>
-      <br />
-      <button id="login-btn">Login</button>
-      <button id="logout-btn">Logout</button>
-    </form> -->
+    <p *ngIf="ticketBooked">Ticket was booked successfully for match with id {{selectedMatchId}}</p>
   </div>
   <div fxFlex="80%">
     <div #mapViewNode></div>

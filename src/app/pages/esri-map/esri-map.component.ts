@@ -90,6 +90,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
   selectedStadium: IStadium;
   selectedMatchId: number = -1;
+  ticketBooked: boolean = false;
 
   constructor(
     private fbs: FirebaseService,
@@ -181,6 +182,9 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
   bookTicket() {
     let res = this.firestoreService.bookTicket(this.selectedMatchId, this.userEmail);
+    this.ticketBooked = true;
+    sleep(3000);
+    this.ticketBooked = false;
   }
 
 
@@ -479,3 +483,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.disconnectFirebase();
   }
 }
+function sleep(arg0: number) {
+  throw new Error("Function not implemented.");
+}
+
