@@ -42,8 +42,9 @@ import Search from "@arcgis/core/widgets/Search";
 import RouteParameters from "@arcgis/core/rest/support/RouteParameters.js";
 import FeatureSet from "@arcgis/core/rest/support/FeatureSet.js";
 import * as route from "@arcgis/core/rest/route.js";
-import { User } from 'firebase/auth';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { User } from "firebase/auth";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import Legend from "@arcgis/core/widgets/Legend.js";
 
 @Component({
   selector: "app-esri-map",
@@ -91,6 +92,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   displayedMatches = [];
 
   routingEnabled = false;
+  legend: Legend;
 
   constructor(
     private fbs: FirebaseService,
@@ -103,9 +105,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.stadiums$ = firestoreService.getAllStadiums();
   }
 
-
   viewMatches(stadium: IStadium): void {
-    console.log(stadium);
     let allMatches = [] as IMatch[];
 
     this.matches$.forEach((matches: IMatch[]) => {
@@ -126,10 +126,6 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     });
   }
 
-  btnClick() {
-    console.log("click");
-  }
-
   addRoutingGraphic(type, point) {
     const graphic = new Graphic({
       symbol: {
@@ -143,19 +139,13 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   }
 
   initializeRouting() {
-    console.log("my  view is:");
-
-    console.log(this.view);
-
     this.view.on("click", (event) => {
-      if (this.routingEnabled ) {
+      if (this.routingEnabled) {
         if (this.view.graphics.length !== 0 || !this.selectedStadium) {
           this.view.graphics.removeAll();
           this.view.ui.empty("top-left");
           return;
         }
-
-
 
         this.addRoutingGraphic("origin", event.mapPoint);
         this.addRoutingGraphic(
@@ -207,11 +197,6 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       returnDirections: true,
     });
 
-    console.log(routeParams.stops);
-
-    console.log(this.routeUrl);
-    console.log(this.view);
-
     route
       .solve(this.routeUrl, routeParams)
       .then((data) => {
@@ -251,11 +236,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       })
       .catch(function (error) {
         console.log("my err:");
-
         console.log(error);
       });
-
-    // Display directions
   }
 
   async initializeMap() {
@@ -270,10 +252,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
       this.map = new WebMap(mapProperties);
 
-      this.addFeatureLayers();
       this.addGraphicLayers();
 
-      this.addPoint(this.pointCoords[1], this.pointCoords[0], true);
 
       // Initialize the MapView
       const mapViewProperties = {
@@ -301,7 +281,9 @@ export class EsriMapComponent implements OnInit, OnDestroy {
           ", " +
           this.view.center.longitude
       );
+
       this.initializeSearch();
+      this.addFeatureLayers();
 
       return this.view;
     } catch (error) {
@@ -310,12 +292,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   }
 
   bookTicket() {
-    console.log(this.selectedMatch.match_id);
-    let res = this.firestoreService.bookTicket(this.selectedMatch.match_id, this.userEmail);
-    this.snackBar.open('Ticket booked!', 'Close', {
+    this.snackBar.open("Ticket booked!", "Close", {
       duration: 2000,
-      verticalPosition: 'bottom',
-    horizontalPosition: 'center', 
+      verticalPosition: "bottom",
+      horizontalPosition: "center",
     });
   }
 
@@ -357,9 +337,6 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   bookFromPopup(e, match: IMatch) {
     this.selectedMatch = match;
     this.handleMatchSelect(match.match_id.toString());
-
-    console.log(this.selectedMatch);
-
     this.bookTicket();
   }
 
@@ -392,7 +369,6 @@ export class EsriMapComponent implements OnInit, OnDestroy {
               let g = 0;
               let b = 0;
 
-              // r = mapRange(stadium.capacity - match.available_tickets , 0, stadium.capacity)
               if (match.available_tickets / stadium.capacity > 0.75) {
                 r = 0;
               } else {
@@ -401,16 +377,19 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
               g = mapRange(match.available_tickets, 0, stadium.capacity);
 
+              let sizeModifier =
+                1.5 * (match.available_tickets / stadium.capacity);
+
               const simpleMarkerSymbol = {
                 type: "simple-marker",
-                color: [r, g, b, 1], // Orange
-                size: "15px",
+                color: [r, g, b, 0.75], // Orange
+                size: `${Math.max(15, 15 * sizeModifier)}px`,
                 outline: {
                   color: [0, 0, 0, 0.5], // White
                   width: 1,
                 },
                 style: "circle",
-                yoffset: `${cnt * 15} px`,
+                yoffset: `${cnt * 15 * sizeModifier} px`,
               };
 
               let btn;
@@ -438,26 +417,23 @@ export class EsriMapComponent implements OnInit, OnDestroy {
                   {
                     type: "custom",
                     creator: (graphic: any) => {
-                      // could also check if button already created
-                      // and just reuse it
                       btn = document.createElement("button");
                       btn.innerText = "Book a ticket";
-                      btn.classList.add("mat-raised-button")
+                      btn.classList.add("mat-raised-button");
                       btn.classList.add("mat-focus-indicator");
-                      // btn.classList.add("mat-button-base");
-                      // btn.classList.add("custom-button[_ngcontent-snh-c63]");
-                      btn.style.cssText += 'color:white;background-color:#4caf50';
+                      btn.style.cssText +=
+                        "color:white;background-color:#4caf50";
 
                       this.authService.isAuthenticated.subscribe((isAuth) => {
                         if (!isAuth) {
                           btn.disabled = !isAuth;
                         }
 
-                        if(btn.disabled) {
-                          btn.style.cssText = "color:#a6a6a6;background-color:#e0e0e0;cursor:none";
+                        if (btn.disabled) {
+                          btn.style.cssText =
+                            "color:#a6a6a6;background-color:#e0e0e0;cursor:none";
                         }
                       });
-
 
                       btn.addEventListener("click", (e) =>
                         this.bookFromPopup(e, { ...graphic.graphic.attributes })
@@ -479,9 +455,9 @@ export class EsriMapComponent implements OnInit, OnDestroy {
                 attributes: attributes,
               } as any);
               graphicsLayer.add(pointGraphic);
+
             }
           }
-          console.log("==========");
         });
       }
     });
@@ -510,33 +486,32 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
     this.map.add(stadiums2026, 2);
 
+    this.legend = new Legend({
+      view: this.view,
+      layerInfos: [],
+    });
+
+    this.legend.layerInfos.push({
+      layer: matchesLayer,
+      title: "Matches", 
+    });
+
+    this.legend.layerInfos.push({
+      layer: stadiumsLayer,
+      title: "Stadiums from previous WC", 
+    });
+
+    this.legend.layerInfos.push({
+      layer: stadiums2026,
+      title: "Stadiums from WC 2026",
+    });
+
+
+    this.view.ui.add(this.legend, "bottom-right");
+
     console.log("feature layers added");
   }
 
-  addPoint(lat: number, lng: number, register: boolean) {
-    let point = new Point({
-      longitude: lng,
-      latitude: lat,
-    });
-
-    const simpleMarkerSymbol = {
-      type: "simple-marker",
-      color: [226, 119, 40], // Orange
-      outline: {
-        color: [255, 255, 255], // White
-        width: 1,
-      },
-    };
-    let pointGraphic: esri.Graphic = new Graphic({
-      geometry: point,
-      symbol: simpleMarkerSymbol,
-    });
-
-    this.graphicsLayer.add(pointGraphic);
-    if (register) {
-      this.pointGraphic = pointGraphic;
-    }
-  }
 
   removePoint() {
     if (this.pointGraphic != null) {
@@ -568,26 +543,14 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.subscriptionList = this.fbs
       .getChangeFeedList()
       .subscribe((items: ITestItem[]) => {
-        // console.log("got new items from list: ", items);
         this.graphicsLayer.removeAll();
-        for (let item of items) {
-          this.addPoint(item.lat, item.lng, false);
-        }
       });
     this.subscriptionObj = this.fbs
       .getChangeFeedObj()
       .subscribe((stat: ITestItem[]) => {
-        // console.log("item updated from object: ", stat);
       });
   }
 
-  addPointItem() {
-    // console.log("Map center: " + this.view.center.latitude + ", " + this.view.center.longitude);
-    this.fbs.addPointItem(
-      this.view.center.latitude,
-      this.view.center.longitude
-    );
-  }
 
   disconnectFirebase() {
     if (this.subscriptionList != null) {
@@ -603,11 +566,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.connectFirebase();
     console.log("initializing map");
     this.matches$ = this.firestoreService.getAllMatches();
-    // console.log(this.isAuthenticated);
     this.authService.isAuthenticated.subscribe((isAuth) => {
       if (isAuth) {
         console.log("Utilizatorul este autentificat!");
-        this.afAuth.authState.subscribe(user => {
+        this.afAuth.authState.subscribe((user) => {
           this.user = user;
           this.userEmail = user.email;
         });
@@ -617,7 +579,6 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     });
     this.initializeMap().then(() => {
       // The map has been initialized
-      // console.log("mapView ready: ", this.view.ready);
       this.loaded = this.view.ready;
       this.runTimer();
       this.initializeRouting();
@@ -633,7 +594,3 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.disconnectFirebase();
   }
 }
-function sleep(arg0: number) {
-  throw new Error("Function not implemented.");
-}
-

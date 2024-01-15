@@ -1,10 +1,7 @@
-import { Injectable, OnInit } from '@angular/core';
-import { AngularFirestoreDocument } from "@angular/fire/compat/firestore"
+import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
-import { IMatch } from 'src/app/models/match';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { User } from 'firebase/auth';
 import { AuthenticationService } from './authentication.service';
 

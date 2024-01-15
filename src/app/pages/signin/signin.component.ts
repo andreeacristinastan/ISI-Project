@@ -26,8 +26,6 @@ export class SigninComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // console.log(this.isAuthenticated);
-
     this.form = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
@@ -41,8 +39,6 @@ export class SigninComponent implements OnInit {
       email: this.form.value.email,
       password: this.form.value.password
     }).subscribe(() => {
-      // this.isAuthenticated = true;
-      // console.log('isAuthenticated este setat la true');
       this.router.navigate(['map']);
       this.cd.detectChanges();
     }, (error: any) => {
@@ -56,7 +52,6 @@ export class SigninComponent implements OnInit {
   logout() {
     console.log('Metoda logout a fost apelată!');
     this.authenticationService.logout().subscribe(() => {
-      // this.isAuthenticated = false;
       this.router.navigate(['map']);
       this.cd.detectChanges();
     }, (error: any) => {
