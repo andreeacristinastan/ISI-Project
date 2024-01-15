@@ -1,27 +1,22 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, from, Observable, of, tap, throwError} from 'rxjs';
+import { BehaviorSubject, catchError, from, Observable, tap, throwError} from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
-import { AuthError, createUserWithEmailAndPassword, getAuth, UserCredential } from 'firebase/auth';
+import { AuthError } from 'firebase/auth';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
-  // currentUser$ = authState(this.auth);
   private _isAuthenticated = new BehaviorSubject<boolean>(false);
   isAuthenticated: Observable<boolean> = this._isAuthenticated.asObservable();
   constructor(
     private auth: AngularFireAuth, private router: Router ) {
-      // const auth: Auth = this.afAuth.auth;
     }
-  // ) { this.auth.authState.subscribe(user => {
-  //   this._isAuthenticated.next(!!user);
-  // });}
+
 
   signIn(params: SignIn): Observable<any> {
-    // console.log('Autentificare reușită!')
     return from(this.auth.signInWithEmailAndPassword(
       params.email, params.password
     )).pipe(
@@ -52,20 +47,6 @@ export class AuthenticationService {
       )
     );
   }
-
-  // signup(params: SignUp): Observable<any> {
-  //   const auth = this.auth;
-  //   // console.log(auth);
-  //   console.log('signup function called with params:', params);
-    
-  //   return from(
-  //     createUserWithEmailAndPassword(auth, params.email, params.password)
-  //   ).pipe(
-  //     catchError((error: AuthError) =>
-  //       throwError(() => new Error(this.translateFirebaseErrorMessage(error)))
-  //     )
-  //   );
-  // }
 
   signup(params: SignUp): Observable<any> {
     return from(

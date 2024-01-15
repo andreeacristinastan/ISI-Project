@@ -20,10 +20,8 @@ import { MatListModule } from '@angular/material/list';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AngularFireAuthModule } from "@angular/fire/compat/auth";
-// import { BlankComponent } from './pages/mocks/blank/blank.component';
 import { HomeComponent } from './pages/home/home.component';
 import { AuthenticationService } from "./services/database/authentication.service";
-import { SignupComponent } from './pages/signup/signup.component';
 import { FormsModule } from "@angular/forms";
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatCardModule} from '@angular/material/card';

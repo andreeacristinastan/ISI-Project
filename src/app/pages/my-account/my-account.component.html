@@ -1,34 +1,30 @@
-<!-- <p *ngIf="user">Email: {{ user.email }}</p>
-<p *ngIf="!user">No user is currently logged in.</p>
+<div class="container mt-4" style="padding: 10px">
+  <mat-card>
+    <mat-card-header>
+      <div fxLayout="row">
+        <mat-icon
+          aria-hidden="false"
+          aria-label="Mail icon"
+          fontIcon="person_pin"
+        ></mat-icon>
+        <h2>User Information</h2>
+      </div></mat-card-header
+    >
 
-<hr>
-
-<h3>My tickets:</h3>
-<div *ngFor="let ticket of tickets">
-    <p>{{ticket}}</p>
-    <hr>
-  </div> -->
-
-  <div class="container mt-4">
-    <div *ngIf="user" class="card">
-      <div class="card-body">
-        <h4 class="card-title">User Information</h4>
-        <p class="card-text">Email: {{ user.email }}</p>
-      </div>
-    </div>
-    <div *ngIf="!user" class="alert alert-warning mt-3" role="alert">
-      No user is currently logged in.
-    </div>
-  
-    <hr class="mt-4">
-  
-    <h3 class="mt-4">My Tickets:</h3>
-    <div class="ticket-list">
-      <mat-chip-list class="mat-mdc-chip-set-stacked" color="accent">
-        <mat-chip *ngFor="let ticket of tickets">
-          {{ ticket }}
-        </mat-chip>
-      </mat-chip-list>
-    </div>
+    <mat-card-content>Email: {{ user.email }}</mat-card-content>
+  </mat-card>
+  <div *ngIf="!user" class="alert alert-warning mt-3" role="alert">
+    No user is currently logged in.
   </div>
-  
+
+  <mat-divider></mat-divider>
+
+  <h3 class="mt-4">My Tickets:</h3>
+  <div class="ticket-list">
+    <mat-chip-list class="mat-mdc-chip-set-stacked" color="accent">
+      <mat-chip *ngFor="let ticket of tickets">
+        {{ ticket }}
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+</div>

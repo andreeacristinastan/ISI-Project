@@ -17,10 +17,7 @@ interface ITab {
 
 export class AppComponent {
 
-  tabs: ITab[] = [//{
-    // name: 'Home',
-    // link: '/home'
-  /*},*/ 
+  tabs: ITab[] = [
   {
     name: 'Map',
     link: '/map'
@@ -46,22 +43,6 @@ export class AppComponent {
     });
   }
 
-  // onTabClick(last: boolean, tab: any) {
-  //   if (last) {
-  //     this.authService.isAuthenticated.subscribe(isAuth => {
-  //       if (isAuth) {
-  //         this.authService.logout().subscribe(() => {
-  //           this.activeTab = tab.link;
-  //         });
-  //       } else {
-  //         this.activeTab = tab.link;
-  //       }
-  //     });
-  //   } else {
-  //     this.activeTab = tab.link;
-  //   }
-  // }
-
   onTabClick(last: boolean, tab: any) {
     if (last) {
       this.authService.isAuthenticated.pipe(first()).subscribe(isAuth => {
@@ -84,12 +65,10 @@ export class AppComponent {
     
     this.authService.isAuthenticated.subscribe(isAuth => {
       if (isAuth) {
-        // if (isAuthenticated) {
           this.tabs.splice(2, 0, {
             name: 'My Account',
             link: '/myaccount'
           });
-        // }
       } else {
         // Utilizatorul nu este autentificat
         const index = this.tabs.findIndex(tab => tab.name === 'My Account');
