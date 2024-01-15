@@ -292,6 +292,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   }
 
   bookTicket() {
+    this.firestoreService.bookTicket(this.selectedMatch.match_id, this.userEmail);
     this.snackBar.open("Ticket booked!", "Close", {
       duration: 2000,
       verticalPosition: "bottom",
