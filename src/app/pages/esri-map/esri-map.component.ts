@@ -43,6 +43,7 @@ import RouteParameters from "@arcgis/core/rest/support/RouteParameters.js";
 import FeatureSet from "@arcgis/core/rest/support/FeatureSet.js";
 import * as route from "@arcgis/core/rest/route.js";
 import { User } from 'firebase/auth';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: "app-esri-map",
@@ -90,13 +91,13 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   displayedMatches = [];
 
   routingEnabled = false;
-  ticketBooked: boolean = false;
 
   constructor(
     private fbs: FirebaseService,
     private authService: AuthenticationService,
     private firestoreService: DataService,
     private afAuth: AngularFireAuth,
+    private snackBar: MatSnackBar
   ) {
     this.matches$ = firestoreService.getAllMatches();
     this.stadiums$ = firestoreService.getAllStadiums();
@@ -311,9 +312,11 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   bookTicket() {
     console.log(this.selectedMatch.match_id);
     let res = this.firestoreService.bookTicket(this.selectedMatch.match_id, this.userEmail);
-    this.ticketBooked = true;
-    sleep(3000);
-    this.ticketBooked = false;    console.log(res);
+    this.snackBar.open('Ticket booked!', 'Close', {
+      duration: 2000,
+      verticalPosition: 'bottom',
+    horizontalPosition: 'center', 
+    });
   }
 
   handleMatchSelect(match_id: string) {

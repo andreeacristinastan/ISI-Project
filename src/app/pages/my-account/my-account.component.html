@@ -23,10 +23,12 @@
     <hr class="mt-4">
   
     <h3 class="mt-4">My Tickets:</h3>
-    <div *ngFor="let ticket of tickets" class="card mt-2">
-      <div class="card-body">
-        <p class="card-text">{{ ticket }}</p>
-      </div>
+    <div class="ticket-list">
+      <mat-chip-list class="mat-mdc-chip-set-stacked" color="accent">
+        <mat-chip *ngFor="let ticket of tickets">
+          {{ ticket }}
+        </mat-chip>
+      </mat-chip-list>
     </div>
   </div>
   
